@@ -1,3 +1,5 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+
 :root {
   --bg: #f8f6f1;
   --ink: #30322f;
@@ -21,7 +23,7 @@ body {
   min-height: 100vh;
   background: #101010;
   color: var(--ink);
-  font-family: Inter, Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  font-family: Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
 }
 
 button,
@@ -63,7 +65,9 @@ button {
 .brand {
   text-align: center;
   color: var(--pink);
-  font-size: 20px;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0;
 }
 
 .icon-btn {
