@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CAKEY 주문제작 케이크 주문서</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-live="polite">
+      <section class="phone" data-screen="home">
+        <header class="topbar">
+          <button class="icon-btn" type="button" data-back aria-label="뒤로가기">‹</button>
+          <strong class="brand">CAKEY</strong>
+          <button class="icon-btn bag" type="button" aria-label="장바구니"></button>
+        </header>
+
+        <section class="hero">
+          <img src="./assets/hero-cake.png" alt="커스텀 케이크 이미지" />
+          <div class="hero-copy">
+            <span>Premium custom service</span>
+            <h1>CAKEY</h1>
+            <p>커스텀 케이크 주문의<br />새로운 치트키</p>
+          </div>
+        </section>
+
+        <section class="intro">
+          <p>나만의 케이크를 1분 만에 디자인하고, AI로 미리 확인한 뒤 가장 가까운 파티셰리에게 주문하세요.</p>
+          <small>본 서비스는 체험판입니다.</small>
+          <button class="primary-btn" type="button" data-go="options">주문자로 체험하기 <span>⌾</span></button>
+          <button class="ghost-btn" type="button">사업자로 체험하기 <span>▤</span></button>
+        </section>
+
+        <section class="feature-grid">
+          <article>
+            <span class="feature-icon">✎</span>
+            <strong>Easy Design</strong>
+            <small>1분 완성 커스텀</small>
+          </article>
+          <article>
+            <span class="feature-icon purple">✦</span>
+            <strong>AI Preview</strong>
+            <small>완성품 미리보기</small>
+          </article>
+        </section>
+
+        <section class="local-card">
+          <div>
+            <h2>Local<br />Patisserie</h2>
+            <p>내 주변 가장 실력 있는 파티셰리를 연결해 드립니다.</p>
+          </div>
+          <img src="./assets/detail-cake.png" alt="파티셰리 케이크" />
+        </section>
+
+        <section class="special-list">
+          <h2>CAKEY의 특별함</h2>
+          <p><span>1</span>다양한 커스텀 디자인</p>
+          <p><span>2</span>상담 없이 디자인 결과 실시간 프리뷰</p>
+          <p><span>3</span>기다림 필요없이 가격 즉시 확인</p>
+        </section>
+      </section>
+
+      <section class="phone hidden" data-screen="options">
+        <header class="topbar">
+          <button class="icon-btn" type="button" data-go="home" aria-label="뒤로가기">‹</button>
+          <strong class="brand">CAKEY</strong>
+          <button class="icon-btn bag" type="button" aria-label="장바구니"></button>
+        </header>
+
+        <section class="step-head">
+          <div>
+            <h1>세부 옵션을 선택해 주세요</h1>
+          </div>
+          <strong>STEP<br />02/05</strong>
+          <div class="progress"><span style="width: 40%"></span></div>
+        </section>
+
+        <form class="option-form" id="cakeForm">
+          <fieldset>
+            <legend>사이즈 선택</legend>
+            <div class="chips">
+              <label><input type="radio" name="size" value="도시락" checked />도시락</label>
+              <label><input type="radio" name="size" value="미니" />미니</label>
+              <label><input type="radio" name="size" value="기타" />기타</label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>모양 선택</legend>
+            <div class="chips icon-chips">
+              <label><input type="radio" name="shape" value="원형" checked /><span>○</span>원형</label>
+              <label><input type="radio" name="shape" value="하트" /><span>♡</span>하트</label>
+              <label><input type="radio" name="shape" value="사각" /><span>□</span>사각</label>
+              <label><input type="radio" name="shape" value="기타" /><span>···</span>기타</label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>맛 선택</legend>
+            <div class="chips">
+              <label><input type="radio" name="flavor" value="생크림" />생크림</label>
+              <label><input type="radio" name="flavor" value="초코" checked />초코</label>
+              <label><input type="radio" name="flavor" value="바닐라오레오" />바닐라오레오</label>
+              <label><input type="radio" name="flavor" value="기타" />기타</label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>전체 스타일</legend>
+            <div class="style-cards">
+              <label>
+                <input type="radio" name="style" value="러블리" checked />
+                <span class="style-card lovely">✦<strong>러블리</strong></span>
+              </label>
+              <label>
+                <input type="radio" name="style" value="심플" />
+                <span class="style-card simple">⌁<strong>심플</strong></span>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>메인 색상</legend>
+            <div class="palette">
+              <label style="--swatch: #fff"><input type="radio" name="color" value="화이트" /></label>
+              <label style="--swatch: #ffddec"><input type="radio" name="color" value="소프트 핑크" checked /></label>
+              <label style="--swatch: #afe7ec"><input type="radio" name="color" value="민트 블루" /></label>
+              <label style="--swatch: #fff8c9"><input type="radio" name="color" value="버터 옐로" /></label>
+              <label style="--swatch: #303030"><input type="radio" name="color" value="블랙" /></label>
+              <label style="--swatch: #e7e8ff"><input type="radio" name="color" value="라벤더" /></label>
+              <label style="--swatch: #dcb987"><input type="radio" name="color" value="카라멜" /></label>
+              <label style="--swatch: #83e989"><input type="radio" name="color" value="그린" /></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="lettering-box">
+            <legend>Lettering</legend>
+            <textarea name="message" maxlength="20" placeholder="케이크 위에 적을 메시지를 입력하세요">Happy Birthday!</textarea>
+          </fieldset>
+
+          <fieldset>
+            <legend>토핑 기반 데코</legend>
+            <div class="chips">
+              <label><input type="checkbox" name="decor" value="진주" checked />진주</label>
+              <label><input type="checkbox" name="decor" value="스프링클" checked />스프링클</label>
+              <label><input type="checkbox" name="decor" value="과일" />과일</label>
+              <label><input type="checkbox" name="decor" value="반짝이" />반짝이</label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>표현 난이도</legend>
+            <div class="segmented">
+              <label><input type="radio" name="level" value="기본" />기본</label>
+              <label><input type="radio" name="level" value="보통" checked />보통</label>
+              <label><input type="radio" name="level" value="화려함" />화려함</label>
+            </div>
+          </fieldset>
+
+          <section class="extra-card">
+            <h2>Extras</h2>
+            <label><span>🎉 Candles <small>+₩1,500</small></span><input type="checkbox" name="extra" value="Candles" checked /></label>
+            <label><span>⚜ Cake Toppers <small>+₩3,000</small></span><input type="checkbox" name="extra" value="Cake Toppers" /></label>
+          </section>
+        </form>
+
+        <div class="sticky-cta">
+          <button class="primary-btn" type="button" data-go="preview">AI 이미지 생성하기</button>
+        </div>
+      </section>
+
+      <section class="phone hidden" data-screen="preview">
+        <header class="topbar">
+          <button class="icon-btn" type="button" data-go="options" aria-label="뒤로가기">‹</button>
+          <strong class="brand">The Patisserie</strong>
+          <button class="icon-btn bag" type="button" aria-label="장바구니"></button>
+        </header>
+
+        <section class="step-head">
+          <small>DESIGN PROCESS</small>
+          <strong>Step 3 of 5</strong>
+          <div class="progress"><span style="width: 60%"></span></div>
+          <h1>CAKEY가 주문정보와 가장 유사한 결과를 찾았어요!</h1>
+          <p>선택하신 옵션을 바탕으로 생성된 세상에 단 하나뿐인 디자인입니다.</p>
+        </section>
+
+        <section class="preview-card">
+          <img src="./assets/ai-cake.png" alt="AI 케이크 디자인 프리뷰" />
+          <button type="button" class="floating like">♡</button>
+          <button type="button" class="floating share">⌯</button>
+          <button type="button" class="regen">↻ Regenerate</button>
+        </section>
+
+        <section class="points-card">
+          <h2>디자인 포인트</h2>
+          <p><span>●</span><b data-summary-color>부드러운 파스텔 핑크 베이스</b></p>
+          <p><span>★</span><b data-summary-decor>우아한 진주 데코레이션 포인트</b></p>
+          <p><span>▰</span><b data-summary-style>클래식한 영문 레터링 서체</b></p>
+        </section>
+
+        <blockquote>"미니멀한 감성과 고급스러운 디테일이 조화를 이루는 디자인입니다. 특별한 기념일을 더욱 빛내줄 거예요."</blockquote>
+
+        <button class="primary-btn wide" type="button" data-go="confirm">이 디자인으로 확정하기</button>
+      </section>
+
+      <section class="phone hidden" data-screen="confirm">
+        <header class="topbar">
+          <button class="icon-btn" type="button" data-go="preview" aria-label="뒤로가기">‹</button>
+          <strong class="brand">The Patisserie</strong>
+          <button class="icon-btn bag" type="button" aria-label="장바구니"></button>
+        </header>
+
+        <section class="step-head">
+          <small>STEP 4 OF 5</small>
+          <strong>80% Complete</strong>
+          <div class="progress"><span style="width: 80%"></span></div>
+          <h1>주문 내용을 확인해볼까요?</h1>
+          <p>선택하신 감성과 디자인이 완벽한지 체크해주세요.</p>
+        </section>
+
+        <section class="order-preview">
+          <img src="./assets/confirm-cake.png" alt="최종 주문 확인 이미지" />
+          <div class="price-box">
+            <small>Estimated Price</small>
+            <strong>₩55,000 ~ ₩72,000</strong>
+          </div>
+          <div class="confirm-lines">
+            <p><small>Mood & Palette</small><span><b data-final-style>Minimal</b><b data-final-color>Soft Pink</b></span><button>Edit ✎</button></p>
+            <p><small>Personal Message</small><strong data-final-message>"Happy Birthday!"</strong><button>Edit ✎</button></p>
+            <p><small>Decorations</small><span data-final-decor>진주, 스프링클</span><button>Edit ✎</button></p>
+          </div>
+        </section>
+
+        <aside class="note">
+          <strong>ⓘ</strong>
+          <p>위 예상 가격은 AI가 분석한 평균 시세이며, 실제 제작 업체와의 상담 과정에서 케이크 시트 종류나 정교한 요청 사항에 따라 변경될 수 있습니다.</p>
+        </aside>
+
+        <button class="primary-btn wide" type="button" data-go="shops">주문 가능한 업체 찾기</button>
+      </section>
+
+      <section class="phone hidden" data-screen="shops">
+        <header class="topbar">
+          <button class="icon-btn" type="button" data-go="confirm" aria-label="뒤로가기">‹</button>
+          <strong class="brand">업체 찾기</strong>
+          <button class="icon-btn bag" type="button" aria-label="장바구니"></button>
+        </header>
+
+        <div class="tabs" role="tablist">
+          <button class="active" type="button">거리순</button>
+          <button type="button">리뷰순</button>
+          <button type="button">추천순</button>
+        </div>
+
+        <section class="shop-list">
+          <article class="shop-card" data-go="details">
+            <img src="./assets/shop-velvet.png" alt="Velvet & Crumb" />
+            <div><h2>Velvet & Crumb</h2><p>★ 4.9 (128)</p><small>운영 시간: 11:00 - 20:00</small></div><span>500M</span>
+          </article>
+          <article class="shop-card" data-go="details">
+            <img src="./assets/shop-sugar.png" alt="Sugar Bloom" />
+            <div><h2>Sugar Bloom</h2><p>★ 4.8 (94)</p><small>운영 시간: 10:00 - 21:00</small></div><span>850M</span>
+          </article>
+          <article class="shop-card" data-go="details">
+            <img src="./assets/shop-daily.png" alt="Daily Cake" />
+            <div><h2>Daily Cake</h2><p>★ 4.7 (215)</p><small>운영 시간: 09:00 - 19:00</small></div><span>1.2KM</span>
+          </article>
+        </section>
+      </section>
+
+      <section class="phone hidden" data-screen="details">
+        <header class="topbar">
+          <button class="icon-btn" type="button" data-go="shops" aria-label="뒤로가기">‹</button>
+          <strong class="brand">CAKEY</strong>
+          <button class="icon-btn bag" type="button" aria-label="장바구니"></button>
+        </header>
+
+        <section class="step-head">
+          <h1>픽업 정보를 입력해 주세요</h1>
+          <strong>STEP<br />05/05</strong>
+          <div class="progress"><span style="width: 100%"></span></div>
+        </section>
+
+        <form class="details-form">
+          <section class="form-card">
+            <h2>▣ 픽업 정보</h2>
+            <label>픽업 날짜<input name="date" value="10/13/2024" /></label>
+            <label>픽업 시간<input name="time" value="01:30 PM" /></label>
+          </section>
+          <section class="form-card">
+            <h2>▣ 주문자 정보</h2>
+            <label>성함<input name="name" value="홍길동" /></label>
+            <label>연락처<input name="phone" value="010-1234-5678" /></label>
+          </section>
+          <section>
+            <h2>Special Requests</h2>
+            <p>Any dietary requirements or specific cake notes?</p>
+            <textarea name="requests" placeholder="알레르기, 특정 크림 색상, 배송 메모 등을 남겨주세요."></textarea>
+          </section>
+          <aside class="reservation-note">
+            <h2>Reservation Note</h2>
+            <p>Your custom selection will be held for 30 minutes until completion of merchant matching.</p>
+          </aside>
+        </form>
+
+        <div class="sticky-cta">
+          <button class="primary-btn" type="button" data-go="done">입력 완료 →</button>
+        </div>
+      </section>
+
+      <section class="phone hidden" data-screen="done">
+        <header class="topbar">
+          <button class="icon-btn" type="button" data-go="details" aria-label="뒤로가기">‹</button>
+          <strong class="brand">The Patisserie</strong>
+          <button class="icon-btn bag" type="button" aria-label="장바구니"></button>
+        </header>
+
+        <section class="done-head">
+          <div class="check">✓</div>
+          <h1>주문이 완료되었습니다!</h1>
+          <p>소중한 날, CAKEY가 함께할게요.</p>
+        </section>
+
+        <section class="receipt-card">
+          <small>PICKUP LOCATION</small>
+          <h2>Velvet & Crumb</h2>
+          <p>서울특별시 성동구 성수동 123-45<br />02-123-4567</p>
+          <hr />
+          <dl>
+            <dt>Pickup Date & Time</dt><dd data-receipt-date>2024년 10월 13일 / 01:30 PM</dd>
+            <dt>Orderer</dt><dd data-receipt-user>홍길동 (010-1234-5678)</dd>
+            <dt>Payment Status</dt><dd class="pink">결제 대기 (₩55,000)</dd>
+          </dl>
+        </section>
+
+        <section class="breakdown">
+          <h2>Order Details Breakdown</h2>
+          <p><span data-final-style-2>Minimal Style</span><b>Design</b></p>
+          <p><span data-final-color-2>Soft Pink</span><b>Color</b></p>
+          <p><span data-final-message-2>Lettering: Happy Birthday!</span><b>✎</b></p>
+          <p><span>Extra: Candles</span><b>+₩0</b></p>
+        </section>
+
+        <section class="memory">
+          <img src="./assets/done-cake.png" alt="주문 완료 케이크" />
+          <p>Crafted with love,<br />baked for memories.</p>
+        </section>
+
+        <button class="primary-btn wide" type="button">서비스 만족도 조사하기</button>
+        <button class="ghost-btn wide" type="button" data-go="home">처음으로 돌아가기</button>
+      </section>
+
+      <nav class="bottom-nav" aria-label="하단 내비게이션">
+        <button type="button" data-go="shops"><span>▥</span>Gallery</button>
+        <button type="button" data-go="preview"><span>✦</span>Orders</button>
+        <button type="button" data-go="options"><span>🛒</span>Cart</button>
+        <button type="button" data-go="done"><span>♙</span>Profile</button>
+      </nav>
+    </main>
+    <script src="./script.js"></script>
+  </body>
+</html>
