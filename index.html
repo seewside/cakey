@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CAKEY 주문서</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-live="polite">
+      <section class="screen active" data-screen="home">
+        <header class="topbar">
+          <button class="icon-button menu-icon" aria-label="메뉴">
+            <span></span><span></span><span></span>
+          </button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <button class="icon-button bag-icon" aria-label="장바구니"></button>
+        </header>
+
+        <div class="home-hero reveal">
+          <img class="floating-cake" src="./assets/cake-hero.jpg" alt="파스텔 커스텀 케이크" />
+          <span class="pill">PREMIUM CUSTOM SERVICE</span>
+          <h1>커스텀 케이크 주문의<br />새로운 치트키,<br /><strong>CAKEY</strong></h1>
+          <p>원하는 디자인을 고르면 가까운 케이크 가게와 바로 연결해 드려요.</p>
+        </div>
+
+        <div class="home-actions reveal">
+          <button class="primary pink" data-next="options">주문자로 체험하기</button>
+          <button class="primary cream" data-next="options">사업자로 체험하기</button>
+        </div>
+
+        <section class="cakey-special reveal">
+          <span>CAKEY의 특별함</span>
+          <h2>상상한 케이크를<br />가장 가까운 현실로</h2>
+          <ul>
+            <li><b>1</b><p>취향에 맞춘 옵션으로 디자인을 빠르게 완성해요.</p></li>
+            <li><b>2</b><p>완성 이미지를 미리 보고 마음에 드는 디자인을 고를 수 있어요.</p></li>
+            <li><b>3</b><p>내 주변 가게의 실제 제작 스타일과 자연스럽게 연결돼요.</p></li>
+          </ul>
+        </section>
+      </section>
+
+      <section class="screen" data-screen="options">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <button class="icon-button bag-icon" aria-label="장바구니"></button>
+        </header>
+
+        <div class="title-row reveal">
+          <h1>케이크 옵션 선택</h1>
+          <span>STEP 01/04</span>
+        </div>
+        <div class="progress"><span style="width:25%"></span></div>
+
+        <form class="options-form">
+          <section class="option-block reveal">
+            <h2>사이즈 선택</h2>
+            <div class="chips" data-group="size"></div>
+          </section>
+          <section class="option-block reveal">
+            <h2>모양 선택</h2>
+            <div class="chips icon-chips" data-group="shape"></div>
+          </section>
+          <section class="option-block reveal">
+            <h2>맛 선택</h2>
+            <div class="chips" data-group="flavor"></div>
+          </section>
+          <section class="option-block reveal">
+            <h2>전체 스타일</h2>
+            <div class="style-cards" data-group="style"></div>
+            <div class="chips small" data-group="mood"></div>
+          </section>
+          <section class="option-block reveal">
+            <h2>테두리</h2>
+            <div class="chips compact" data-group="border"></div>
+          </section>
+          <section class="option-block reveal">
+            <h2>레터링 위치</h2>
+            <div class="chips compact" data-group="letteringType"></div>
+          </section>
+          <section class="option-block reveal">
+            <h2>레터링</h2>
+            <label class="letter-box">
+              <span>Lettering</span>
+              <textarea id="lettering" maxlength="20" placeholder="케이크 위에 적을 메시지를 입력하세요"></textarea>
+              <small><b id="letterCount">0</b>/20</small>
+            </label>
+          </section>
+          <section class="option-block reveal">
+            <h2>토핑</h2>
+            <div class="chips compact" data-group="topping"></div>
+          </section>
+          <section class="option-block reveal">
+            <h2>메인 색상</h2>
+            <div class="swatches" data-group="color"></div>
+          </section>
+          <section class="option-block reveal">
+            <h2>크림 데코</h2>
+            <div class="chips compact" data-group="cream"></div>
+          </section>
+          <section class="option-block reveal">
+            <h2>캐릭터</h2>
+            <div class="chips compact" data-group="character"></div>
+          </section>
+          <section class="option-block reveal">
+            <h2>판 레터링</h2>
+            <div class="chips compact" data-group="plate"></div>
+          </section>
+        </form>
+
+        <div class="price-panel reveal">
+          <div>
+            <span>선택 옵션 반영 가격</span>
+            <strong id="totalPrice">₩0</strong>
+          </div>
+          <button class="primary cream" data-next="preview">AI 이미지 생성하기</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="preview">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <button class="icon-button bag-icon" aria-label="장바구니"></button>
+        </header>
+        <div class="title-row reveal">
+          <div>
+            <span class="progress-line"></span>
+            <h1>CAKEY가 딱 맞는 디자인을 찾았어요!</h1>
+            <p>선택하신 옵션을 바탕으로 생성된 하나뿐인 디자인입니다.</p>
+          </div>
+          <span>STEP 02/04</span>
+        </div>
+        <div class="preview-card reveal">
+          <img src="./assets/cake-hero.jpg" alt="AI 케이크 프리뷰" />
+          <button class="round like" aria-label="좋아요">♥</button>
+          <button class="round share" aria-label="공유">↗</button>
+          <button class="regen">↻ REGENERATE</button>
+        </div>
+        <section class="design-points reveal">
+          <h2>디자인 포인트</h2>
+          <p><span>◎</span> 부드러운 파스텔 핑크 베이스</p>
+          <p><span>♛</span> 귀여운 곰돌이 캐릭터</p>
+          <p><span>彩</span> 플레이풀 레터링</p>
+        </section>
+        <blockquote class="speech reveal">"당신의 선택이 특별한 기념일을 더욱 빛내줄 거예요."</blockquote>
+        <button class="primary cream reveal" data-next="shop">이 디자인으로 확정하기</button>
+      </section>
+
+      <section class="screen" data-screen="shop">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <button class="icon-button bag-icon" aria-label="장바구니"></button>
+        </header>
+        <div class="title-row reveal">
+          <div>
+            <span class="progress-line shop-progress"></span>
+            <h1>추천 가게를 확인해보세요</h1>
+            <p>온유어데이가 만들어온 대표 케이크를 모아봤어요.</p>
+          </div>
+          <span>STEP 03/04</span>
+        </div>
+        <section class="shop-gallery reveal" aria-label="온유어데이 대표 케이크 사진">
+          <figure class="shop-main-photo">
+            <img src="./assets/cake-hero.jpg" alt="온유어데이 대표 케이크" />
+            <figcaption>온유어데이</figcaption>
+          </figure>
+          <div class="shop-side-photos">
+            <img src="./assets/cake-hero.jpg" alt="온유어데이 케이크 예시 1" />
+            <img src="./assets/cake-hero.jpg" alt="온유어데이 케이크 예시 2" />
+            <img src="./assets/cake-hero.jpg" alt="온유어데이 케이크 예시 3" />
+          </div>
+        </section>
+        <section class="shop-info reveal">
+          <h2>온유어데이</h2>
+          <p>섬세한 파스텔 컬러와 귀여운 캐릭터 케이크를 잘 만드는 로컬 파티세리입니다.</p>
+        </section>
+        <button class="primary cream reveal" data-next="confirm">이 가게로 주문하기</button>
+      </section>
+
+      <section class="screen" data-screen="confirm">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <button class="icon-button bag-icon" aria-label="장바구니"></button>
+        </header>
+        <div class="title-row reveal">
+          <div>
+            <span class="progress-line wide"></span>
+            <h1>주문 내용을 확인해볼까요?</h1>
+            <p>선택하신 감성과 디자인이 잘 반영됐는지 체크해주세요.</p>
+          </div>
+          <span>STEP 04/04</span>
+        </div>
+        <article class="summary-card reveal">
+          <img src="./assets/cake-hero.jpg" alt="확정된 케이크 디자인" />
+          <div class="glass-price">
+            <span>ESTIMATED PRICE</span>
+            <strong id="summaryPrice">₩0</strong>
+          </div>
+          <dl id="summaryList"></dl>
+        </article>
+        <p class="notice reveal">예상 가격은 선택 옵션 기준이며, 실제 제작 상담 과정에서 요청 사항에 따라 조정될 수 있습니다.</p>
+        <button class="primary cream reveal" data-next="order">다음으로 넘어가기</button>
+      </section>
+
+      <section class="screen" data-screen="order">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <button class="icon-button bag-icon" aria-label="장바구니"></button>
+        </header>
+        <div class="title-row reveal">
+          <h1>주문 정보 입력</h1>
+          <span>STEP 05/05</span>
+        </div>
+        <div class="progress"><span style="width:100%"></span></div>
+        <form class="order-form reveal">
+          <fieldset>
+            <legend>픽업 정보</legend>
+            <label>픽업 날짜<input type="date" value="2026-05-20" /></label>
+            <label>픽업 시간<input type="time" value="14:30" /></label>
+          </fieldset>
+          <fieldset>
+            <legend>주문자 정보</legend>
+            <label>성함<input type="text" value="김케이" /></label>
+            <label>연락처<input type="tel" value="010-1234-5678" /></label>
+          </fieldset>
+          <label class="requests">
+            Special Requests
+            <span>알레르기 정보나 요청사항을 적어주세요.</span>
+            <textarea placeholder="원하는 색감, 문구 위치, 픽업 메모 등을 입력하세요."></textarea>
+          </label>
+          <p class="reservation-note">주문 내역은 매장 확인 후 확정됩니다. 확인 대기 시간은 평균 30분 이내입니다.</p>
+          <button type="button" class="primary cream" data-next="survey">주문 완료하기</button>
+        </form>
+      </section>
+
+      <section class="screen survey-screen" data-screen="survey">
+        <header class="survey-top">
+          <img class="logo small-logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <button class="icon-button close-icon" data-back aria-label="닫기"></button>
+        </header>
+        <div class="survey-head reveal">
+          <div class="cake-mark">♡</div>
+          <h1>서비스는 어떠셨나요?</h1>
+          <p>소중한 의견을 기다리고 있어요.</p>
+        </div>
+        <form class="survey-form reveal">
+          <div id="questions"></div>
+          <label class="free-text">
+            기타 건의사항
+            <textarea placeholder="더 나은 서비스를 위해 의견을 남겨주세요. (선택사항)"></textarea>
+          </label>
+          <button type="button" class="primary cream" id="submitSurvey">제출하기</button>
+        </form>
+      </section>
+
+      <section class="screen thanks-screen" data-screen="thanks">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-next="home" aria-label="홈으로 돌아가기"></button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <button class="icon-button bag-icon" aria-label="장바구니"></button>
+        </header>
+        <div class="thanks-content reveal">
+          <div class="confetti-orb" aria-hidden="true">
+            <span class="confetti-icon">▰</span>
+          </div>
+          <h1>설문에 응해주셔서 감사합니다!</h1>
+          <p>소중한 의견을 바탕으로 더 좋은 서비스를 제공하는 CAKEY가 되겠습니다.</p>
+          <dl class="thanks-card">
+            <div>
+              <dt>완료 일시</dt>
+              <dd id="completedDate">2026.05.20</dd>
+            </div>
+            <div>
+              <dt>참여 혜택</dt>
+              <dd>500P 적립 완료</dd>
+            </div>
+          </dl>
+          <button type="button" class="primary pink" id="goHome">홈으로 돌아가기</button>
+          <small>SWEET MOMENTS WITH CAKEY</small>
+        </div>
+      </section>
+
+      <nav class="bottom-nav" aria-label="하단 메뉴">
+        <a class="active"><span>⌘</span>Gallery</a>
+        <a><span>▣</span>Orders</a>
+        <a><span>♣</span>Cart</a>
+        <a><span>♙</span>Profile</a>
+      </nav>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
