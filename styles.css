@@ -246,6 +246,12 @@ figure {
   transform: scale(0.98);
 }
 
+.primary:disabled {
+  cursor: wait;
+  filter: grayscale(0.18);
+  opacity: 0.72;
+}
+
 .primary.pink { background: var(--pink); }
 .primary.cream { background: var(--cream); }
 
@@ -975,7 +981,7 @@ label input {
 
 .survey-form {
   display: grid;
-  gap: 22px;
+  gap: 30px;
 }
 
 .survey-card {
@@ -1027,6 +1033,14 @@ label input {
 
 .free-text textarea {
   margin-top: 18px;
+}
+
+.survey-status {
+  min-height: 22px;
+  color: var(--deep);
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
 }
 
 .thanks-content {

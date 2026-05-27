@@ -1,0 +1,106 @@
+const FOLDER_NAME = "기술과 창업";
+const SPREADSHEET_NAME = "cakey_사용자만족도_데이터";
+const SHEET_NAME = "survey_responses";
+
+const HEADERS = [
+  "저장일시",
+  "제출일시",
+  "페이지",
+  "Q1",
+  "Q2",
+  "Q3",
+  "Q4",
+  "Q5",
+  "Q6",
+  "기타 건의사항",
+  "사이즈",
+  "모양",
+  "맛",
+  "스타일",
+  "무드",
+  "테두리",
+  "레터링 타입",
+  "토핑",
+  "색상",
+  "크림 데코",
+  "캐릭터",
+  "판 레터링",
+  "가격",
+  "브라우저",
+];
+
+function doPost(event) {
+  const payload = JSON.parse(event.postData.contents || "{}");
+  const sheet = getSurveySheet();
+  sheet.appendRow(toRow(payload));
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ ok: true }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getSurveySheet() {
+  const folder = getOrCreateFolder(FOLDER_NAME);
+  const spreadsheet = getOrCreateSpreadsheet(folder, SPREADSHEET_NAME);
+  const sheet = spreadsheet.getSheetByName(SHEET_NAME) || spreadsheet.insertSheet(SHEET_NAME);
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(HEADERS);
+    sheet.setFrozenRows(1);
+  }
+
+  return sheet;
+}
+
+function getOrCreateFolder(name) {
+  const folders = DriveApp.getFoldersByName(name);
+  return folders.hasNext() ? folders.next() : DriveApp.createFolder(name);
+}
+
+function getOrCreateSpreadsheet(folder, name) {
+  const files = folder.getFilesByName(name);
+  if (files.hasNext()) {
+    return SpreadsheetApp.open(files.next());
+  }
+
+  const spreadsheet = SpreadsheetApp.create(name);
+  const file = DriveApp.getFileById(spreadsheet.getId());
+  file.moveTo(folder);
+  return spreadsheet;
+}
+
+function toRow(payload) {
+  const scores = payload.scores || [];
+  const order = payload.order || {};
+
+  return [
+    new Date(),
+    payload.submittedAt || "",
+    payload.pageUrl || "",
+    getScore(scores, 0),
+    getScore(scores, 1),
+    getScore(scores, 2),
+    getScore(scores, 3),
+    getScore(scores, 4),
+    getScore(scores, 5),
+    payload.comment || "",
+    order.size || "",
+    order.shape || "",
+    order.flavor || "",
+    order.style || "",
+    order.mood || "",
+    order.border || "",
+    order.letteringType || "",
+    order.topping || "",
+    order.color || "",
+    order.cream || "",
+    order.character || "",
+    order.plate || "",
+    order.price || "",
+    payload.userAgent || "",
+  ];
+}
+
+function getScore(scores, index) {
+  return scores[index] && scores[index].score !== undefined ? scores[index].score : "";
+}

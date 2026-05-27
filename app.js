@@ -1,5 +1,14 @@
 const screens = [...document.querySelectorAll(".screen")];
 const stack = ["home"];
+const surveyWebAppUrl = window.CAKEY_SURVEY_WEB_APP_URL || "";
+const surveyQuestions = [
+  "케이크 디자인을 선택하는 과정이 간편했나요?",
+  "커스텀 옵션(문구, 색상 등) 설정이 직관적이었나요?",
+  "추천 받은 가게가 마음에 들었나요?",
+  "완성된 케이크 디자인이 원하는 결과물에 가까웠나요?",
+  "애플리케이션의 반응 속도와 안정성에 만족하시나요?",
+  "전반적으로 CAKEY 서비스를 지인에게 추천할 의향이 있나요?",
+];
 
 const optionData = {
   size: [
@@ -275,20 +284,12 @@ function updateSummary() {
 }
 
 function buildSurvey() {
-  const questions = [
-    "케이크 디자인을 선택하는 과정이 간편했나요?",
-    "커스텀 옵션(문구, 색상 등) 설정이 직관적이었나요?",
-    "추천 받은 가게가 마음에 들었나요?",
-    "완성된 케이크 디자인이 원하는 결과물에 가까웠나요?",
-    "애플리케이션의 반응 속도와 안정성에 만족하시나요?",
-    "전반적으로 CAKEY 서비스를 지인에게 추천할 의향이 있나요?",
-  ];
   const root = document.getElementById("questions");
-  root.innerHTML = questions.map((question, index) => `
-    <section class="survey-card">
+  root.innerHTML = surveyQuestions.map((question, index) => `
+    <section class="survey-card" data-question-index="${index}">
       <h2>${index + 1}. ${question}</h2>
       <div class="rating" role="group" aria-label="${question}">
-        ${[1, 2, 3, 4, 5].map((score) => `<button type="button">${score}</button>`).join("")}
+        ${[1, 2, 3, 4, 5].map((score) => `<button type="button" data-score="${score}">${score}</button>`).join("")}
       </div>
       <div class="scale-labels"><span>매우 아니다</span><span>매우 그렇다</span></div>
     </section>
@@ -298,6 +299,60 @@ function buildSurvey() {
       [...button.parentElement.children].forEach((peer) => peer.classList.remove("active"));
       button.classList.add("active");
     });
+  });
+}
+
+function setSurveyStatus(message) {
+  const status = document.getElementById("surveyStatus");
+  if (status) status.textContent = message;
+}
+
+function collectSurveyPayload() {
+  const scores = surveyQuestions.map((question, index) => {
+    const active = document.querySelector(`[data-question-index="${index}"] .rating button.active`);
+    return {
+      question,
+      score: active ? Number(active.dataset.score) : "",
+    };
+  });
+
+  return {
+    submittedAt: new Date().toISOString(),
+    pageUrl: window.location.href,
+    userAgent: navigator.userAgent,
+    scores,
+    comment: document.getElementById("surveyComment")?.value.trim() || "",
+    order: {
+      size: state.size,
+      shape: state.shape,
+      flavor: state.flavor,
+      style: state.style,
+      mood: state.mood,
+      border: state.border,
+      letteringType: state.letteringType,
+      topping: state.topping,
+      color: state.color,
+      cream: state.cream,
+      character: state.character,
+      plate: state.plate,
+      price: totalPrice(),
+    },
+  };
+}
+
+async function saveSurveyResponse() {
+  if (!surveyWebAppUrl) {
+    console.warn("CAKEY_SURVEY_WEB_APP_URL is not configured.");
+    return;
+  }
+
+  await fetch(surveyWebAppUrl, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "text/plain",
+    },
+    body: JSON.stringify(collectSurveyPayload()),
   });
 }
 
@@ -338,9 +393,21 @@ document.getElementById("lettering").addEventListener("input", (event) => {
   document.getElementById("letterCount").textContent = event.target.value.length;
 });
 
-document.getElementById("submitSurvey").addEventListener("click", () => {
-  setCompletedDate();
-  showScreen("thanks");
+document.getElementById("submitSurvey").addEventListener("click", async () => {
+  const button = document.getElementById("submitSurvey");
+  button.disabled = true;
+  setSurveyStatus("응답을 저장하고 있어요.");
+
+  try {
+    await saveSurveyResponse();
+    setSurveyStatus("");
+    setCompletedDate();
+    showScreen("thanks");
+  } catch (error) {
+    console.error(error);
+    setSurveyStatus("저장 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+    button.disabled = false;
+  }
 });
 
 document.getElementById("goHome").addEventListener("click", () => {

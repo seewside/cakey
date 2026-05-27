@@ -288,8 +288,9 @@
           <div id="questions"></div>
           <label class="free-text">
             기타 건의사항
-            <textarea placeholder="더 나은 서비스를 위해 의견을 남겨주세요. (선택사항)"></textarea>
+            <textarea id="surveyComment" placeholder="더 나은 서비스를 위해 의견을 남겨주세요. (선택사항)"></textarea>
           </label>
+          <p class="survey-status" id="surveyStatus" role="status" aria-live="polite"></p>
           <button type="button" class="primary cream" id="submitSurvey">제출하기</button>
         </form>
       </section>
@@ -329,6 +330,7 @@
       </nav>
     </main>
 
+    <script src="./survey-config.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>

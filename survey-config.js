@@ -1,0 +1,1 @@
+window.CAKEY_SURVEY_WEB_APP_URL = "";
