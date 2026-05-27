@@ -383,10 +383,23 @@ function observeReveals() {
 }
 
 document.addEventListener("click", (event) => {
+  const logo = event.target.closest(".topbar .logo, .survey-top .logo");
   const next = event.target.closest("[data-next]");
   const back = event.target.closest("[data-back]");
+  if (logo) showScreen("home");
   if (next) showScreen(next.dataset.next);
   if (back) goBack();
+});
+
+document.querySelectorAll(".topbar .logo, .survey-top .logo").forEach((logo) => {
+  logo.setAttribute("role", "button");
+  logo.setAttribute("tabindex", "0");
+  logo.setAttribute("aria-label", "홈으로 돌아가기");
+  logo.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    showScreen("home");
+  });
 });
 
 document.getElementById("lettering").addEventListener("input", (event) => {

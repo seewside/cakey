@@ -86,6 +86,13 @@ textarea {
   width: 112px;
   height: 42px;
   object-fit: contain;
+  cursor: pointer;
+}
+
+.logo:focus-visible {
+  outline: 2px solid var(--deep);
+  outline-offset: 4px;
+  border-radius: 8px;
 }
 
 .small-logo {
