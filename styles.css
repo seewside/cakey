@@ -725,6 +725,7 @@ input {
 }
 
 .shop-gallery {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(92px, 0.72fr);
   gap: 10px;
@@ -755,24 +756,6 @@ input {
   filter: saturate(1.05);
 }
 
-.shop-main-photo::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0;
-  height: 45%;
-  background: linear-gradient(180deg, transparent, rgba(44, 30, 38, 0.62));
-}
-
-.shop-main-photo figcaption {
-  position: absolute;
-  left: 18px;
-  bottom: 72px;
-  z-index: 1;
-  color: #fff;
-  font-size: 22px;
-  font-weight: 1000;
-}
-
 .shop-side-photos {
   display: grid;
   gap: 10px;
@@ -788,17 +771,25 @@ input {
 .shop-side-photos img:nth-child(3) { object-position: 48% 68%; filter: brightness(1.04) saturate(0.92); }
 
 .shop-info {
-  margin: 24px 0;
-  padding: 24px;
+  position: relative;
+  z-index: 2;
+  margin: -118px 0 24px;
+  padding: 18px 24px 20px;
+  background: rgba(244, 241, 243, 0.86);
+  backdrop-filter: blur(10px);
+  text-align: left;
 }
 
 .shop-info h2 {
+  display: grid;
+  gap: 7px;
   color: var(--deep);
   font-size: 24px;
+  line-height: 1.05;
 }
 
 .shop-info p {
-  margin-top: 10px;
+  margin-top: 14px;
   color: var(--muted);
   line-height: 1.65;
   font-weight: 650;
