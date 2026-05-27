@@ -773,7 +773,7 @@ input {
 .shop-info {
   position: relative;
   z-index: 2;
-  margin: -118px 0 24px;
+  margin: -88px 0 24px;
   padding: 18px 24px 20px;
   background: rgba(244, 241, 243, 0.86);
   backdrop-filter: blur(10px);
@@ -781,11 +781,10 @@ input {
 }
 
 .shop-info h2 {
-  display: grid;
-  gap: 7px;
   color: var(--deep);
   font-size: 24px;
   line-height: 1.05;
+  white-space: nowrap;
 }
 
 .shop-info p {
