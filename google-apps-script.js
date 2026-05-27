@@ -1,5 +1,4 @@
-const FOLDER_NAME = "기술과 창업";
-const SPREADSHEET_NAME = "cakey_사용자만족도_데이터";
+const SPREADSHEET_ID = "1__HSLMmRvGQGWqgH7we0VkAvbX1M6NJO";
 const SHEET_NAME = "survey_responses";
 
 const HEADERS = [
@@ -40,8 +39,7 @@ function doPost(event) {
 }
 
 function getSurveySheet() {
-  const folder = getOrCreateFolder(FOLDER_NAME);
-  const spreadsheet = getOrCreateSpreadsheet(folder, SPREADSHEET_NAME);
+  const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = spreadsheet.getSheetByName(SHEET_NAME) || spreadsheet.insertSheet(SHEET_NAME);
 
   if (sheet.getLastRow() === 0) {
@@ -50,23 +48,6 @@ function getSurveySheet() {
   }
 
   return sheet;
-}
-
-function getOrCreateFolder(name) {
-  const folders = DriveApp.getFoldersByName(name);
-  return folders.hasNext() ? folders.next() : DriveApp.createFolder(name);
-}
-
-function getOrCreateSpreadsheet(folder, name) {
-  const files = folder.getFilesByName(name);
-  if (files.hasNext()) {
-    return SpreadsheetApp.open(files.next());
-  }
-
-  const spreadsheet = SpreadsheetApp.create(name);
-  const file = DriveApp.getFileById(spreadsheet.getId());
-  file.moveTo(folder);
-  return spreadsheet;
 }
 
 function toRow(payload) {

@@ -27,4 +27,4 @@ http://localhost:5173
 4. 실행 권한은 본인 계정, 액세스 권한은 `모든 사용자`로 설정해 배포합니다.
 5. 발급된 웹 앱 URL을 `survey-config.js`의 `window.CAKEY_SURVEY_WEB_APP_URL` 값에 넣습니다.
 
-설문이 제출되면 Drive의 `기술과 창업` 폴더 안에 `cakey_사용자만족도_데이터` 스프레드시트가 자동으로 생성되고 응답이 누적됩니다.
+설문이 제출되면 지정된 `cakey_사용자만족도_데이터` 스프레드시트의 `survey_responses` 시트에 응답이 누적됩니다.
