@@ -896,8 +896,54 @@ label input {
 }
 
 .survey-screen,
-.thanks-screen {
+.thanks-screen,
+.pending-screen {
   background: linear-gradient(180deg, #fff 0 9%, #fff4f7 9% 100%);
+}
+
+.pending-content {
+  min-height: calc(100vh - 96px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 72px;
+  text-align: center;
+}
+
+.pending-mark {
+  display: grid;
+  place-items: center;
+  width: 118px;
+  height: 118px;
+  margin-bottom: 30px;
+  border-radius: 50%;
+  background: #ffeaf3;
+  box-shadow: 0 22px 44px rgba(127, 78, 105, 0.12);
+}
+
+.pending-mark img {
+  width: 78px;
+  height: auto;
+  display: block;
+}
+
+.pending-content h1 {
+  color: #463b40;
+  font-size: 29px;
+  line-height: 1.35;
+}
+
+.pending-content p {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+  font-weight: 700;
+}
+
+.pending-content .primary {
+  margin-top: 42px;
 }
 
 .survey-head {

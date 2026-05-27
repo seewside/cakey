@@ -105,7 +105,7 @@ function activeScreen() {
 }
 
 function setBottomNav(name) {
-  document.querySelector(".bottom-nav").style.display = ["survey", "thanks"].includes(name) ? "none" : "grid";
+  document.querySelector(".bottom-nav").style.display = ["business-pending", "cart-pending", "survey", "thanks"].includes(name) ? "none" : "grid";
 }
 
 function showScreen(name, push = true) {

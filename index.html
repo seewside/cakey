@@ -17,7 +17,7 @@
             <span></span><span></span><span></span>
           </button>
           <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
-          <button class="icon-button bag-icon" aria-label="장바구니"></button>
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
 
         <div class="home-hero reveal">
@@ -29,7 +29,7 @@
 
         <div class="home-actions reveal">
           <button class="primary pink" data-next="options">주문자로 체험하기</button>
-          <button class="primary cream" data-next="options">사업자로 체험하기</button>
+          <button class="primary cream" data-next="business-pending">사업자로 체험하기</button>
         </div>
 
         <section class="cakey-special reveal">
@@ -43,11 +43,45 @@
         </section>
       </section>
 
+      <section class="screen pending-screen" data-screen="business-pending">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
+        </header>
+
+        <div class="pending-content reveal">
+          <div class="pending-mark" aria-hidden="true">
+            <img src="./assets/cakey-logo-transparent.png" alt="" />
+          </div>
+          <h1>아직 준비 중인 서비스입니다.</h1>
+          <p>사업자 체험 기능은 더 좋은 모습으로 곧 찾아올게요.</p>
+          <button type="button" class="primary pink" data-next="home">홈으로 가기</button>
+        </div>
+      </section>
+
+      <section class="screen pending-screen" data-screen="cart-pending">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
+        </header>
+
+        <div class="pending-content reveal">
+          <div class="pending-mark" aria-hidden="true">
+            <img src="./assets/cakey-logo-transparent.png" alt="" />
+          </div>
+          <h1>아직 준비 중인 서비스입니다.</h1>
+          <p>장바구니 기능은 더 좋은 모습으로 곧 찾아올게요.</p>
+          <button type="button" class="primary pink" data-next="home">홈으로 가기</button>
+        </div>
+      </section>
+
       <section class="screen" data-screen="options">
         <header class="topbar">
           <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
           <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
-          <button class="icon-button bag-icon" aria-label="장바구니"></button>
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
 
         <div class="title-row reveal">
@@ -125,7 +159,7 @@
         <header class="topbar">
           <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
           <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
-          <button class="icon-button bag-icon" aria-label="장바구니"></button>
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
         <div class="title-row reveal">
           <div>
@@ -155,13 +189,13 @@
         <header class="topbar">
           <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
           <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
-          <button class="icon-button bag-icon" aria-label="장바구니"></button>
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
         <div class="title-row reveal">
           <div>
             <span class="progress-line shop-progress"></span>
             <h1>추천 가게를 확인해보세요</h1>
-            <p>온유어데이가 만들어온 대표 케이크를 모아봤어요.</p>
+            <p>cakey가 만들어온 대표 케이크를 모아봤어요.</p>
           </div>
           <span>STEP 03/04</span>
         </div>
@@ -186,7 +220,7 @@
         <header class="topbar">
           <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
           <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
-          <button class="icon-button bag-icon" aria-label="장바구니"></button>
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
         <div class="title-row reveal">
           <div>
@@ -212,7 +246,7 @@
         <header class="topbar">
           <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
           <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
-          <button class="icon-button bag-icon" aria-label="장바구니"></button>
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
         <div class="title-row reveal">
           <h1>주문 정보 입력</h1>
@@ -264,7 +298,7 @@
         <header class="topbar">
           <button class="icon-button back-icon" data-next="home" aria-label="홈으로 돌아가기"></button>
           <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
-          <button class="icon-button bag-icon" aria-label="장바구니"></button>
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
         <div class="thanks-content reveal">
           <div class="confetti-orb" aria-hidden="true">
