@@ -1,5 +1,7 @@
 const SPREADSHEET_ID = "1__HSLMmRvGQGWqgH7we0VkAvbX1M6NJO";
 const SHEET_NAME = "cakey_사용자_만족도_데이터";
+const FALLBACK_SPREADSHEET_NAME = "cakey_사용자_만족도_데이터";
+const FALLBACK_SPREADSHEET_ID_KEY = "CAKEY_SURVEY_SPREADSHEET_ID";
 
 const HEADERS = [
   "저장일시",
@@ -35,12 +37,16 @@ function doPost(event) {
   sheet.appendRow(toRow(payload));
 
   return ContentService
-    .createTextOutput(JSON.stringify({ ok: true }))
+    .createTextOutput(JSON.stringify({
+      ok: true,
+      spreadsheetUrl: sheet.getParent().getUrl(),
+      sheetName: sheet.getName(),
+    }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
 function getSurveySheet() {
-  const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const spreadsheet = getWritableSpreadsheet();
   const sheet = spreadsheet.getSheetByName(SHEET_NAME) || spreadsheet.insertSheet(SHEET_NAME);
 
   if (sheet.getLastRow() === 0) {
@@ -49,6 +55,23 @@ function getSurveySheet() {
   }
 
   return sheet;
+}
+
+function getWritableSpreadsheet() {
+  try {
+    return SpreadsheetApp.openById(SPREADSHEET_ID);
+  } catch (error) {
+    const properties = PropertiesService.getScriptProperties();
+    const savedFallbackId = properties.getProperty(FALLBACK_SPREADSHEET_ID_KEY);
+
+    if (savedFallbackId) {
+      return SpreadsheetApp.openById(savedFallbackId);
+    }
+
+    const spreadsheet = SpreadsheetApp.create(FALLBACK_SPREADSHEET_NAME);
+    properties.setProperty(FALLBACK_SPREADSHEET_ID_KEY, spreadsheet.getId());
+    return spreadsheet;
+  }
 }
 
 function toRow(payload) {
