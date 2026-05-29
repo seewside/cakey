@@ -383,7 +383,7 @@ function observeReveals() {
 }
 
 document.addEventListener("click", (event) => {
-  const logo = event.target.closest(".topbar .logo, .survey-top .logo");
+  const logo = event.target.closest(".topbar .logo");
   const next = event.target.closest("[data-next]");
   const back = event.target.closest("[data-back]");
   if (logo) showScreen("home");
@@ -391,7 +391,7 @@ document.addEventListener("click", (event) => {
   if (back) goBack();
 });
 
-document.querySelectorAll(".topbar .logo, .survey-top .logo").forEach((logo) => {
+document.querySelectorAll(".topbar .logo").forEach((logo) => {
   logo.setAttribute("role", "button");
   logo.setAttribute("tabindex", "0");
   logo.setAttribute("aria-label", "홈으로 돌아가기");
