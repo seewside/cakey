@@ -1,7 +1,5 @@
 const SPREADSHEET_ID = "1__HSLMmRvGQGWqgH7we0VkAvbX1M6NJO";
 const SHEET_NAME = "cakey_사용자_만족도_데이터";
-const FALLBACK_SPREADSHEET_NAME = "cakey_사용자_만족도_데이터";
-const FALLBACK_SPREADSHEET_ID_KEY = "CAKEY_SURVEY_SPREADSHEET_ID";
 
 const HEADERS = [
   "저장일시",
@@ -32,34 +30,48 @@ const HEADERS = [
 ];
 
 function doPost(event) {
-  const payload = JSON.parse(event.postData.contents || "{}");
-  const sheet = getSurveySheet();
-  sheet.appendRow(toRow(payload));
+  try {
+    const payload = JSON.parse(event.postData.contents || "{}");
+    const sheet = getSurveySheet();
+    sheet.appendRow(toRow(payload));
 
-  return ContentService
-    .createTextOutput(JSON.stringify({
+    return jsonResponse({
       ok: true,
+      spreadsheetId: SPREADSHEET_ID,
       spreadsheetUrl: sheet.getParent().getUrl(),
       sheetName: sheet.getName(),
-    }))
-    .setMimeType(ContentService.MimeType.JSON);
+    });
+  } catch (error) {
+    return jsonResponse({
+      ok: false,
+      spreadsheetId: SPREADSHEET_ID,
+      message: error.message,
+    });
+  }
 }
 
 function doGet() {
-  const sheet = getSurveySheet();
+  try {
+    const sheet = getSurveySheet();
 
-  return ContentService
-    .createTextOutput(JSON.stringify({
+    return jsonResponse({
       ok: true,
       message: "CAKEY survey endpoint is ready. Submit survey responses with POST.",
+      spreadsheetId: SPREADSHEET_ID,
       spreadsheetUrl: sheet.getParent().getUrl(),
       sheetName: sheet.getName(),
-    }))
-    .setMimeType(ContentService.MimeType.JSON);
+    });
+  } catch (error) {
+    return jsonResponse({
+      ok: false,
+      spreadsheetId: SPREADSHEET_ID,
+      message: error.message,
+    });
+  }
 }
 
 function getSurveySheet() {
-  const spreadsheet = getWritableSpreadsheet();
+  const spreadsheet = openTargetSpreadsheet();
   const sheet = spreadsheet.getSheetByName(SHEET_NAME) || spreadsheet.insertSheet(SHEET_NAME);
 
   if (sheet.getLastRow() === 0) {
@@ -70,21 +82,22 @@ function getSurveySheet() {
   return sheet;
 }
 
-function getWritableSpreadsheet() {
+function openTargetSpreadsheet() {
   try {
     return SpreadsheetApp.openById(SPREADSHEET_ID);
   } catch (error) {
-    const properties = PropertiesService.getScriptProperties();
-    const savedFallbackId = properties.getProperty(FALLBACK_SPREADSHEET_ID_KEY);
-
-    if (savedFallbackId) {
-      return SpreadsheetApp.openById(savedFallbackId);
-    }
-
-    const spreadsheet = SpreadsheetApp.create(FALLBACK_SPREADSHEET_NAME);
-    properties.setProperty(FALLBACK_SPREADSHEET_ID_KEY, spreadsheet.getId());
-    return spreadsheet;
+    throw new Error(
+      "Target document must be a native Google Sheets spreadsheet. " +
+      "Open the linked Excel file in Google Sheets and convert it with File > Save as Google Sheets, " +
+      "then redeploy this script with the converted spreadsheet ID. Original error: " + error.message
+    );
   }
+}
+
+function jsonResponse(body) {
+  return ContentService
+    .createTextOutput(JSON.stringify(body))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function toRow(payload) {
