@@ -361,7 +361,6 @@ figure {
 
 .preview-title-row h1 {
   padding-right: 0;
-  font-size: 24px;
 }
 
 .shop-title-row {
@@ -1303,7 +1302,6 @@ label input {
   .screen { padding-inline: 22px; }
   .home-hero h1 { font-size: 30px; }
   .title-row h1 { font-size: 25px; }
-  .preview-title-row h1 { font-size: 22px; }
   .swatches { grid-template-columns: repeat(5, 42px); }
   .swatch { width: 42px; height: 42px; }
   .color-wheel { width: min(100%, 286px); }
