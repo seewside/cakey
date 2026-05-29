@@ -1025,7 +1025,7 @@ label input {
 
 .survey-form {
   display: grid;
-  gap: 30px;
+  gap: 16px;
 }
 
 #questions {
@@ -1090,7 +1090,7 @@ label input {
 }
 
 .survey-status {
-  min-height: 22px;
+  min-height: 8px;
   color: var(--deep);
   font-size: 13px;
   font-weight: 800;
