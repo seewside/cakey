@@ -348,6 +348,37 @@ figure {
   white-space: nowrap;
 }
 
+.preview-title-row {
+  display: block;
+}
+
+.preview-title-row > span {
+  position: absolute;
+  top: 8px;
+  right: 0;
+  padding-top: 0;
+}
+
+.preview-title-row h1 {
+  padding-right: 0;
+  font-size: 24px;
+}
+
+.shop-title-row {
+  display: block;
+}
+
+.shop-title-row > span {
+  position: absolute;
+  top: 8px;
+  right: 0;
+  padding-top: 0;
+}
+
+.shop-title-row h1 {
+  white-space: nowrap;
+}
+
 .progress,
 .progress-line {
   display: block;
@@ -769,7 +800,7 @@ input {
 .shop-info {
   position: relative;
   z-index: 2;
-  margin: -88px 0 24px;
+  margin: -64px 0 38px;
   padding: 18px 24px 20px;
   background: rgba(244, 241, 243, 0.86);
   backdrop-filter: blur(10px);
@@ -1251,6 +1282,7 @@ label input {
   .screen { padding-inline: 22px; }
   .home-hero h1 { font-size: 30px; }
   .title-row h1 { font-size: 25px; }
+  .preview-title-row h1 { font-size: 22px; }
   .swatches { grid-template-columns: repeat(5, 42px); }
   .swatch { width: 42px; height: 42px; }
   .color-wheel { width: min(100%, 286px); }
