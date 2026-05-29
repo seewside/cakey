@@ -315,20 +315,21 @@ figure {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  align-items: flex-end;
+  align-items: flex-start;
   margin-bottom: 10px;
 }
 
 .title-row > div {
-  width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .title-row h1 {
   color: var(--deep);
   font-size: 30px;
-  line-height: 1.35;
+  line-height: 1.42;
   letter-spacing: 0;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .title-row p {
@@ -338,13 +339,13 @@ figure {
 }
 
 .title-row > span {
-  position: absolute;
-  right: 0;
-  bottom: 4px;
   flex: 0 0 auto;
+  padding-top: 10px;
   color: #5d4b52;
   font-size: 12px;
+  line-height: 1.35;
   font-weight: 900;
+  white-space: nowrap;
 }
 
 .progress,
@@ -532,41 +533,14 @@ input {
 }
 
 .eyedropper-icon {
-  position: relative;
-  width: 28px;
-  height: 28px;
-  transform: rotate(-42deg) scale(0.82);
-  color: #77726b;
+  display: block;
+  width: 25px;
+  height: 25px;
+  fill: #77726b;
 }
 
-.eyedropper-icon::before {
-  content: "";
-  position: absolute;
-  left: 10px;
-  top: 3px;
-  width: 8px;
-  height: 20px;
-  border-radius: 4px 4px 2px 2px;
-  background:
-    linear-gradient(currentColor, currentColor) 50% 0 / 12px 8px no-repeat,
-    linear-gradient(#fbf4ce, #fbf4ce) 50% 11px / 8px 7px no-repeat,
-    currentColor;
-  box-shadow:
-    0 -2px 0 2px currentColor,
-    0 9px 0 -1px currentColor;
-}
-
-.eyedropper-icon::after {
-  content: "";
-  position: absolute;
-  left: 8px;
-  bottom: 0;
-  width: 12px;
-  height: 10px;
-  background:
-    radial-gradient(circle at 50% 100%, currentColor 0 2px, transparent 2.5px),
-    linear-gradient(currentColor, currentColor) 50% 0 / 10px 6px no-repeat;
-  clip-path: polygon(17% 0, 83% 0, 62% 65%, 52% 65%, 52% 100%, 48% 100%, 48% 65%, 38% 65%);
+.eyedropper-highlight {
+  fill: #fbf4ce;
 }
 
 .color-picker-panel {

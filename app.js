@@ -1,6 +1,5 @@
 const screens = [...document.querySelectorAll(".screen")];
 const stack = ["home"];
-const surveyWebAppUrlFallback = "https://script.google.com/macros/s/AKfycbyUM5B_SC2qrIlFY-lXhv0gfZFChn06ApjG7ErW44orwzI_D4w3KJroL4x8xWn8AcsQ/exec";
 const surveyQuestions = [
   "케이크 디자인을 선택하는 과정이 간편했나요?",
   "커스텀 옵션(문구, 색상 등) 설정이 직관적이었나요?",
@@ -225,7 +224,17 @@ function renderOptions() {
     button.style.background = isCustomColor ? "linear-gradient(135deg,#b9fff2,#fff0a6,#ffc1d9)" : color;
     button.setAttribute("aria-label", isCustomColor ? "자유 색상 선택" : `색상 ${color}`);
     if (isCustomColor) {
-      button.innerHTML = '<span class="eyedropper-icon" aria-hidden="true"></span>';
+      button.innerHTML = `
+        <svg class="eyedropper-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <g transform="rotate(45 12 12)">
+            <rect x="8.9" y="2.2" width="6.2" height="5.2" rx="1.9"></rect>
+            <path d="M9.9 6.2h4.2v9.4l-2.1 2.6-2.1-2.6z"></path>
+            <rect class="eyedropper-highlight" x="10.5" y="9.1" width="3" height="4.7" rx="0.9"></rect>
+            <path d="M8.2 14.7h7.6l-2.8 3.7v2h-2v-2z"></path>
+            <circle cx="12" cy="22" r="1.7"></circle>
+          </g>
+        </svg>
+      `;
     }
     button.addEventListener("click", () => {
       if (isCustomColor) {
@@ -366,7 +375,7 @@ function validateSurvey() {
 }
 
 async function saveSurveyResponse() {
-  const surveyWebAppUrl = window.CAKEY_SURVEY_WEB_APP_URL || surveyWebAppUrlFallback;
+  const surveyWebAppUrl = window.CAKEY_SURVEY_WEB_APP_URL || "";
 
   if (!surveyWebAppUrl) {
     throw new Error("CAKEY_SURVEY_WEB_APP_URL is not configured.");
