@@ -1,9 +1,10 @@
 const SPREADSHEET_ID = "1__HSLMmRvGQGWqgH7we0VkAvbX1M6NJO";
-const SHEET_NAME = "survey_responses";
+const SHEET_NAME = "cakey_사용자_만족도_데이터";
 
 const HEADERS = [
   "저장일시",
-  "제출일시",
+  "제출일시(UTC)",
+  "제출일시(KST)",
   "페이지",
   "Q1",
   "Q2",
@@ -57,6 +58,7 @@ function toRow(payload) {
   return [
     new Date(),
     payload.submittedAt || "",
+    payload.submittedAtLocal || "",
     payload.pageUrl || "",
     getScore(scores, 0),
     getScore(scores, 1),

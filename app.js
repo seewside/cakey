@@ -298,6 +298,8 @@ function buildSurvey() {
     button.addEventListener("click", () => {
       [...button.parentElement.children].forEach((peer) => peer.classList.remove("active"));
       button.classList.add("active");
+      button.closest(".survey-card")?.classList.remove("missing");
+      setSurveyStatus("");
     });
   });
 }
@@ -318,6 +320,7 @@ function collectSurveyPayload() {
 
   return {
     submittedAt: new Date().toISOString(),
+    submittedAtLocal: new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
     pageUrl: window.location.href,
     userAgent: navigator.userAgent,
     scores,
@@ -340,10 +343,31 @@ function collectSurveyPayload() {
   };
 }
 
+function validateSurvey() {
+  const missing = [];
+
+  surveyQuestions.forEach((_, index) => {
+    const card = document.querySelector(`[data-question-index="${index}"]`);
+    const hasAnswer = card?.querySelector(".rating button.active");
+    card?.classList.toggle("missing", !hasAnswer);
+    if (!hasAnswer) missing.push(index + 1);
+  });
+
+  if (missing.length) {
+    setSurveyStatus(`${missing.join(", ")}번 문항에 답변해 주세요.`);
+    document.querySelector(`[data-question-index="${missing[0] - 1}"]`)?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+    return false;
+  }
+
+  return true;
+}
+
 async function saveSurveyResponse() {
   if (!surveyWebAppUrl) {
-    console.warn("CAKEY_SURVEY_WEB_APP_URL is not configured.");
-    return;
+    throw new Error("CAKEY_SURVEY_WEB_APP_URL is not configured.");
   }
 
   await fetch(surveyWebAppUrl, {
@@ -407,6 +431,8 @@ document.getElementById("lettering").addEventListener("input", (event) => {
 });
 
 document.getElementById("submitSurvey").addEventListener("click", async () => {
+  if (!validateSurvey()) return;
+
   const button = document.getElementById("submitSurvey");
   button.disabled = true;
   setSurveyStatus("응답을 저장하고 있어요.");
@@ -418,7 +444,7 @@ document.getElementById("submitSurvey").addEventListener("click", async () => {
     showScreen("thanks");
   } catch (error) {
     console.error(error);
-    setSurveyStatus("저장 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+    setSurveyStatus("저장 설정을 확인해 주세요. Apps Script 웹앱 URL이 필요합니다.");
     button.disabled = false;
   }
 });

@@ -311,6 +311,7 @@ figure {
 }
 
 .title-row {
+  position: relative;
   display: flex;
   justify-content: space-between;
   gap: 16px;
@@ -318,11 +319,16 @@ figure {
   margin-bottom: 10px;
 }
 
+.title-row > div {
+  width: 100%;
+}
+
 .title-row h1 {
   color: var(--deep);
   font-size: 30px;
   line-height: 1.35;
   letter-spacing: 0;
+  white-space: nowrap;
 }
 
 .title-row p {
@@ -332,6 +338,9 @@ figure {
 }
 
 .title-row > span {
+  position: absolute;
+  right: 0;
+  bottom: 4px;
   flex: 0 0 auto;
   color: #5d4b52;
   font-size: 12px;
@@ -963,7 +972,7 @@ label input {
 }
 
 .survey-head {
-  margin: 54px 0 28px;
+  margin: 24px 0 28px;
   text-align: center;
 }
 
@@ -1002,6 +1011,11 @@ label input {
 .survey-card {
   padding: 22px;
   background: #fff;
+}
+
+.survey-card.missing {
+  outline: 2px solid #f3a0bc;
+  outline-offset: 2px;
 }
 
 .survey-card h2 {
@@ -1262,7 +1276,7 @@ label input {
 @media (max-width: 390px) {
   .screen { padding-inline: 22px; }
   .home-hero h1 { font-size: 30px; }
-  .title-row h1 { font-size: 26px; }
+  .title-row h1 { font-size: 25px; }
   .swatches { grid-template-columns: repeat(5, 42px); }
   .swatch { width: 42px; height: 42px; }
   .color-wheel { width: min(100%, 286px); }
