@@ -379,6 +379,21 @@ figure {
   white-space: nowrap;
 }
 
+.confirm-title-row {
+  display: block;
+}
+
+.confirm-title-row > span {
+  position: absolute;
+  top: 8px;
+  right: 0;
+  padding-top: 0;
+}
+
+.confirm-title-row h1 {
+  white-space: nowrap;
+}
+
 .progress,
 .progress-line {
   display: block;
@@ -919,6 +934,12 @@ label input {
   margin: 8px 0 18px;
   color: var(--muted);
   font-size: 14px;
+  font-weight: 600;
+}
+
+.requests textarea {
+  font-size: 14px;
+  line-height: 1.6;
   font-weight: 600;
 }
 
