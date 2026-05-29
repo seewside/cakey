@@ -526,7 +526,7 @@ input {
   position: relative;
   width: 28px;
   height: 28px;
-  transform: rotate(-42deg);
+  transform: rotate(-42deg) scale(0.82);
   color: #77726b;
 }
 
@@ -908,10 +908,13 @@ label input {
   font-weight: 600;
 }
 
-.survey-screen,
 .thanks-screen,
 .pending-screen {
   background: linear-gradient(180deg, #fff 0 9%, #fff4f7 9% 100%);
+}
+
+.survey-screen {
+  background: linear-gradient(180deg, #fff8fa 0%, #fff4f7 100%);
 }
 
 .pending-content {
