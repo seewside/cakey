@@ -1,6 +1,6 @@
 const screens = [...document.querySelectorAll(".screen")];
 const stack = ["home"];
-const surveyWebAppUrl = window.CAKEY_SURVEY_WEB_APP_URL || "";
+const surveyWebAppUrlFallback = "https://script.google.com/macros/s/AKfycbyUM5B_SC2qrIlFY-lXhv0gfZFChn06ApjG7ErW44orwzI_D4w3KJroL4x8xWn8AcsQ/exec";
 const surveyQuestions = [
   "케이크 디자인을 선택하는 과정이 간편했나요?",
   "커스텀 옵션(문구, 색상 등) 설정이 직관적이었나요?",
@@ -366,6 +366,8 @@ function validateSurvey() {
 }
 
 async function saveSurveyResponse() {
+  const surveyWebAppUrl = window.CAKEY_SURVEY_WEB_APP_URL || surveyWebAppUrlFallback;
+
   if (!surveyWebAppUrl) {
     throw new Error("CAKEY_SURVEY_WEB_APP_URL is not configured.");
   }
