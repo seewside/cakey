@@ -45,6 +45,19 @@ function doPost(event) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+function doGet() {
+  const sheet = getSurveySheet();
+
+  return ContentService
+    .createTextOutput(JSON.stringify({
+      ok: true,
+      message: "CAKEY survey endpoint is ready. Submit survey responses with POST.",
+      spreadsheetUrl: sheet.getParent().getUrl(),
+      sheetName: sheet.getName(),
+    }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
 function getSurveySheet() {
   const spreadsheet = getWritableSpreadsheet();
   const sheet = spreadsheet.getSheetByName(SHEET_NAME) || spreadsheet.insertSheet(SHEET_NAME);
