@@ -29,7 +29,7 @@
       gtag('js', new Date());
       gtag('config', 'G-RJ90P56VRB');
     </script>
-    <link rel="stylesheet" href="./styles.css?v=20260530-order-admin" />
+    <link rel="stylesheet" href="./styles.css?v=20260531-order-lookup" />
   </head>
   <body>
     <main class="app-shell" aria-live="polite">
@@ -54,6 +54,16 @@
           <button class="primary cream" data-next="business-pending">사업자로 체험하기</button>
           <a class="primary admin-link" href="https://cakey-backend.onrender.com/orders/admin" target="_blank" rel="noreferrer">관리자 주문 조회</a>
         </div>
+
+        <section class="order-lookup reveal">
+          <h2>주문번호로 조회하기</h2>
+          <p>주문 완료 후 받은 주문번호를 입력하면 신청 내용을 다시 확인할 수 있어요.</p>
+          <div class="lookup-form">
+            <input id="orderLookupInput" type="text" placeholder="예: cakey_20260530_152535" autocomplete="off" />
+            <button type="button" id="lookupOrderButton">조회</button>
+          </div>
+          <p class="survey-status" id="orderLookupStatus" role="status" aria-live="polite"></p>
+        </section>
 
         <section class="cakey-special reveal">
           <span>CAKEY의 특별함</span>
@@ -400,6 +410,11 @@
           <div class="cake-mark">♡</div>
           <h1>서비스는 어떠셨나요?</h1>
           <p>소중한 의견을 기다리고 있어요.</p>
+          <div class="order-number-card" id="surveyOrderNumberCard" hidden>
+            <span>주문번호</span>
+            <strong id="surveyOrderNumber">-</strong>
+            <small>나중에 홈 화면에서 이 번호로 주문 내용을 조회할 수 있어요.</small>
+          </div>
         </div>
         <form class="survey-form reveal">
           <div id="questions"></div>
@@ -425,6 +440,10 @@
           <h1>설문에 응해주셔서 감사합니다!</h1>
           <p>소중한 의견을 바탕으로 더 좋은 서비스를 제공하는 CAKEY가 되겠습니다.</p>
           <dl class="thanks-card">
+            <div id="thanksOrderNumberRow" hidden>
+              <dt>주문번호</dt>
+              <dd id="thanksOrderNumber">-</dd>
+            </div>
             <div>
               <dt>완료 일시</dt>
               <dd id="completedDate">2026.05.20</dd>
@@ -439,6 +458,21 @@
         </div>
       </section>
 
+      <section class="screen" data-screen="order-lookup">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
+        </header>
+        <div class="title-row reveal">
+          <h1>주문 조회</h1>
+          <span>ORDER</span>
+        </div>
+        <section class="lookup-result reveal" id="orderLookupResult">
+          <p class="notice">주문번호를 입력해 조회해 주세요.</p>
+        </section>
+      </section>
+
       <nav class="bottom-nav" aria-label="하단 메뉴">
         <a class="active"><span>⌘</span>Gallery</a>
         <a><span>▣</span>Orders</a>
@@ -448,6 +482,6 @@
     </main>
 
     <script src="./survey-config.js?v=20260530-new-survey-endpoint"></script>
-    <script src="./app.js?v=20260530-order-admin"></script>
+    <script src="./app.js?v=20260531-order-lookup"></script>
   </body>
 </html>

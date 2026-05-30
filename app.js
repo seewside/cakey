@@ -186,6 +186,7 @@ let recommendationRequestId = 0;
 let customizePreviewData = null;
 let generatedCustomizeImageUrl = null;
 let characterReferenceImageUrl = null;
+let lastOrderId = localStorage.getItem("CAKEY_LAST_ORDER_ID") || "";
 
 const colors = [
   "#ffffff",
@@ -435,6 +436,16 @@ function displayShopName(item) {
   const rawName = item?.shop_name?.trim();
   if (!rawName || rawName.toLowerCase() === "unknown") return "온유어데이";
   return rawName;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  }[character]));
 }
 
 function colorToTag(color) {
@@ -989,6 +1000,21 @@ function setOrderStatus(message) {
   if (status) status.textContent = message;
 }
 
+function setSavedOrderId(orderId) {
+  lastOrderId = orderId || "";
+  if (lastOrderId) localStorage.setItem("CAKEY_LAST_ORDER_ID", lastOrderId);
+
+  const surveyCard = document.getElementById("surveyOrderNumberCard");
+  const surveyNumber = document.getElementById("surveyOrderNumber");
+  const thanksRow = document.getElementById("thanksOrderNumberRow");
+  const thanksNumber = document.getElementById("thanksOrderNumber");
+
+  if (surveyCard) surveyCard.hidden = !lastOrderId;
+  if (surveyNumber) surveyNumber.textContent = lastOrderId || "-";
+  if (thanksRow) thanksRow.hidden = !lastOrderId;
+  if (thanksNumber) thanksNumber.textContent = lastOrderId || "-";
+}
+
 async function saveOrder() {
   const response = await fetch(`${API_BASE_URL}/orders`, {
     method: "POST",
@@ -1000,6 +1026,96 @@ async function saveOrder() {
     throw new Error(data.detail || `HTTP ${response.status}`);
   }
   return data;
+}
+
+function setOrderLookupStatus(message) {
+  const status = document.getElementById("orderLookupStatus");
+  if (status) status.textContent = message;
+}
+
+function formatOrderOptionList(options = {}) {
+  const price = Number(options.price);
+  return [
+    ["사이즈", options.size],
+    ["모양", options.shape],
+    ["맛", options.flavor],
+    ["스타일", options.style],
+    ["무드", options.mood],
+    ["테두리", options.border],
+    ["레터링 타입", options.lettering_type],
+    ["토핑", options.topping],
+    ["색상", options.color],
+    ["크림 데코", options.cream],
+    ["캐릭터", options.character],
+    ["판 레터링", options.plate],
+    ["가격", Number.isFinite(price) && price > 0 ? `${price.toLocaleString("ko-KR")}원` : ""],
+    ["문구", options.lettering_text],
+    ["추가 변경 요청", options.extra_request],
+    ["캐릭터 설명", options.character_description],
+  ]
+    .filter(([, value]) => value)
+    .map(([label, value]) => `<dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd>`)
+    .join("");
+}
+
+function renderOrderLookupResult(order) {
+  const result = document.getElementById("orderLookupResult");
+  if (!result) return;
+  const images = order.images || {};
+  const recommendedImage = imageUrl(images.recommended_crop_image_url);
+  const generatedImage = imageUrl(images.generated_customize_image_url);
+  const optionRows = formatOrderOptionList(order.options);
+
+  result.innerHTML = `
+    <article class="order-lookup-card">
+      <div class="order-lookup-head">
+        <span>주문번호</span>
+        <strong>${escapeHtml(order.order_id)}</strong>
+        <small>${escapeHtml(order.shop_name || "온유어데이")} · ${escapeHtml(order.saved_at || "저장 완료")}</small>
+      </div>
+      <div class="application-compare">
+        <figure>
+          <img src="${recommendedImage}" alt="추천 참고 이미지" />
+          <figcaption>추천 참고</figcaption>
+        </figure>
+        <figure>
+          <img src="${generatedImage}" alt="AI 수정 이미지" />
+          <figcaption>AI 수정</figcaption>
+        </figure>
+      </div>
+      <dl class="lookup-detail-list">${optionRows || "<dt>상태</dt><dd>저장 완료</dd>"}</dl>
+    </article>
+  `;
+}
+
+async function lookupOrder(orderId) {
+  const response = await fetch(`${API_BASE_URL}/orders/lookup/${encodeURIComponent(orderId)}`, {
+    cache: "no-store",
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(response.status === 404 ? "해당 주문번호를 찾지 못했습니다." : data.detail || `HTTP ${response.status}`);
+  }
+  return data;
+}
+
+async function handleOrderLookup(orderId = "") {
+  const input = document.getElementById("orderLookupInput");
+  const targetOrderId = (orderId || input?.value || "").trim();
+  if (!targetOrderId) {
+    setOrderLookupStatus("주문번호를 입력해 주세요.");
+    return;
+  }
+
+  setOrderLookupStatus("주문 내역을 조회하고 있어요.");
+  try {
+    const order = await lookupOrder(targetOrderId);
+    setOrderLookupStatus("");
+    renderOrderLookupResult(order);
+    showScreen("order-lookup");
+  } catch (error) {
+    setOrderLookupStatus(error.message);
+  }
 }
 
 function validateSurvey() {
@@ -1127,6 +1243,7 @@ document.getElementById("submitOrder")?.addEventListener("click", async () => {
   setOrderStatus("주문서와 이미지를 저장하고 있어요.");
   try {
     const result = await saveOrder();
+    setSavedOrderId(result.order_id);
     setOrderStatus(`주문번호 ${result.order_id}로 저장되었습니다.`);
     showScreen("survey");
   } catch (error) {
@@ -1160,6 +1277,16 @@ document.getElementById("goHome").addEventListener("click", () => {
   showScreen("home");
 });
 
+document.getElementById("lookupOrderButton")?.addEventListener("click", () => {
+  handleOrderLookup();
+});
+
+document.getElementById("orderLookupInput")?.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter") return;
+  event.preventDefault();
+  handleOrderLookup();
+});
+
 document.getElementById("refreshRecommendations")?.addEventListener("click", (event) => {
   event.preventDefault();
   event.stopPropagation();
@@ -1178,6 +1305,7 @@ document.getElementById("generateCustomize")?.addEventListener("click", generate
 
 renderOptions();
 buildSurvey();
+setSavedOrderId(lastOrderId);
 updateSummary();
 observeReveals();
 setBottomNav("home");
