@@ -1,5 +1,7 @@
 const SPREADSHEET_ID = "1Dwlh8sDwvU3-z2KX37iBAdOLcHYlztXTYwHfgc6-HxE";
 const SHEET_NAME = "cakey_사용자_만족도_데이터";
+const ORDER_SHEET_NAME = "cakey_주문_아카이브";
+const ORDER_DRIVE_FOLDER_ID = "1g9aPn9RHymCa-ITd3OnWWqTaGn38bbjE";
 
 const HEADERS = [
   "저장일시(KST)",
@@ -33,14 +35,56 @@ const HEADERS = [
   "브라우저",
 ];
 
+const ORDER_HEADERS = [
+  "저장일시(KST)",
+  "주문번호",
+  "페이지",
+  "사이즈",
+  "모양",
+  "맛",
+  "스타일",
+  "무드",
+  "테두리",
+  "레터링 타입",
+  "토핑",
+  "색상",
+  "크림 데코",
+  "캐릭터",
+  "판 레터링",
+  "가격",
+  "픽업 날짜",
+  "픽업 시간",
+  "주문자명",
+  "연락처",
+  "주문 메모",
+  "문구",
+  "추가 변경 요청",
+  "캐릭터 설명",
+  "추천 crop ID",
+  "추천 가게명",
+  "추천 이미지 원본 URL",
+  "AI 생성 이미지 원본 URL",
+  "Drive 추천 이미지",
+  "Drive AI 생성 이미지",
+  "브라우저",
+];
+
 function doPost(event) {
-  return savePayload(parsePayload(event));
+  const payload = parsePayload(event);
+  if (payload.mode === "order_archive") {
+    return saveOrderArchive(payload);
+  }
+  return savePayload(payload);
 }
 
 function doGet(event) {
   try {
     if (event && event.parameter && event.parameter.payload) {
-      return savePayload(parsePayload(event));
+      const payload = parsePayload(event);
+      if (payload.mode === "order_archive") {
+        return saveOrderArchive(payload);
+      }
+      return savePayload(payload);
     }
 
     const sheet = getSurveySheet();
@@ -108,12 +152,24 @@ function getSurveySheet() {
   return sheet;
 }
 
+function getOrderSheet() {
+  const spreadsheet = openTargetSpreadsheet();
+  const sheet = spreadsheet.getSheetByName(ORDER_SHEET_NAME) || spreadsheet.insertSheet(ORDER_SHEET_NAME);
+  ensureHeaderRowWithHeaders(sheet, ORDER_HEADERS);
+
+  return sheet;
+}
+
 function ensureHeaderRow(sheet) {
-  const currentHeaders = sheet.getRange(1, 1, 1, HEADERS.length).getValues()[0];
-  const shouldUpdateHeaders = HEADERS.some((header, index) => currentHeaders[index] !== header);
+  ensureHeaderRowWithHeaders(sheet, HEADERS);
+}
+
+function ensureHeaderRowWithHeaders(sheet, headers) {
+  const currentHeaders = sheet.getRange(1, 1, 1, headers.length).getValues()[0];
+  const shouldUpdateHeaders = headers.some((header, index) => currentHeaders[index] !== header);
 
   if (shouldUpdateHeaders) {
-    sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
     sheet.setFrozenRows(1);
   }
 }
@@ -173,4 +229,111 @@ function toRow(payload) {
 
 function getScore(scores, index) {
   return scores[index] && scores[index].score !== undefined ? scores[index].score : "";
+}
+
+function saveOrderArchive(payload) {
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(10000);
+    const folder = DriveApp.getFolderById(ORDER_DRIVE_FOLDER_ID);
+    const order = payload.order || {};
+    const orderId = payload.orderId || makeOrderId();
+    const recommended = saveRemoteImage(folder, orderId, "recommended", order.recommendedCropImageUrl);
+    const generated = saveRemoteImage(folder, orderId, "generated", order.generatedCustomizeImageUrl);
+    const sheet = getOrderSheet();
+    const nextRow = sheet.getLastRow() + 1;
+    sheet.getRange(nextRow, 1, 1, ORDER_HEADERS.length).setValues([
+      toOrderRow(payload, orderId, recommended, generated),
+    ]);
+
+    return jsonResponse({
+      ok: true,
+      orderId,
+      row: nextRow,
+      recommendedDriveUrl: recommended.url,
+      generatedDriveUrl: generated.url,
+      recommendedFileId: recommended.fileId,
+      generatedFileId: generated.fileId,
+    });
+  } catch (error) {
+    return jsonResponse({
+      ok: false,
+      message: error.message,
+    });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function toOrderRow(payload, orderId, recommended, generated) {
+  const order = payload.order || {};
+  return [
+    Utilities.formatDate(new Date(), "Asia/Seoul", "yyyy-MM-dd HH:mm:ss"),
+    orderId,
+    payload.pageUrl || "",
+    order.size || "",
+    order.shape || "",
+    order.flavor || "",
+    order.style || "",
+    order.mood || "",
+    order.border || "",
+    order.letteringType || "",
+    order.topping || "",
+    order.color || "",
+    order.cream || "",
+    order.character || "",
+    order.plate || "",
+    order.price || "",
+    order.pickupDate || "",
+    order.pickupTime || "",
+    order.customerName || "",
+    order.customerPhone || "",
+    order.orderMemo || "",
+    order.letteringText || "",
+    order.extraRequest || "",
+    order.characterDescription || "",
+    order.recommendedCakeCropId || "",
+    order.recommendedShopName || "",
+    order.recommendedCropImageUrl || "",
+    order.generatedCustomizeImageUrl || "",
+    recommended.url || "",
+    generated.url || "",
+    payload.userAgent || "",
+  ];
+}
+
+function saveRemoteImage(folder, orderId, label, url) {
+  if (!url) {
+    return { fileId: "", url: "" };
+  }
+
+  const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+  const status = response.getResponseCode();
+  if (status < 200 || status >= 300) {
+    throw new Error(label + " image download failed: HTTP " + status);
+  }
+
+  const headers = response.getHeaders();
+  const contentType = headers["Content-Type"] || headers["content-type"] || "image/webp";
+  const extension = extensionFromContentType(contentType);
+  const blob = response.getBlob()
+    .setContentType(contentType)
+    .setName(orderId + "_" + label + extension);
+  const file = folder.createFile(blob);
+
+  return {
+    fileId: file.getId(),
+    url: file.getUrl(),
+  };
+}
+
+function extensionFromContentType(contentType) {
+  if (contentType.indexOf("png") !== -1) return ".png";
+  if (contentType.indexOf("jpeg") !== -1 || contentType.indexOf("jpg") !== -1) return ".jpg";
+  if (contentType.indexOf("webp") !== -1) return ".webp";
+  return ".img";
+}
+
+function makeOrderId() {
+  return "cakey_" + Utilities.formatDate(new Date(), "Asia/Seoul", "yyyyMMdd_HHmmss");
 }
