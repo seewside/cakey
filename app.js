@@ -4,6 +4,92 @@ const API_BASE_URL =
   window.CAKEY_API_BASE_URL ||
   localStorage.getItem("CAKEY_API_BASE_URL") ||
   "http://127.0.0.1:8000";
+const TAG_WEIGHTS = {
+  character_type: 4,
+  dominant_color: 3,
+  visual_style: 3,
+  border_type: 2,
+  lettering_type: 2,
+  cream_decoration: 2,
+  topping_decoration: 1,
+  shape: 1,
+  board_lettering: 1,
+  text_presence: 1,
+};
+const demoRecommendations = [
+  {
+    cake_crop_id: "demo-onyourday-1",
+    original_image_id: "demo-original-1",
+    shop_name: "온유어데이",
+    crop_image_url: "./assets/onyourday-cakes-1.png",
+    original_image_url: "./assets/onyourday-cakes-1.png",
+    all_tags: {
+      shape: ["하트"],
+      dominant_color: ["핑크", "화이트"],
+      visual_style: ["러블리"],
+      lettering_type: ["중앙레터링"],
+      border_type: ["크림테두리"],
+      cream_decoration: ["하트"],
+      topping_decoration: ["스프링클"],
+      character_type: ["없음"],
+      text_presence: ["있음"],
+    },
+  },
+  {
+    cake_crop_id: "demo-onyourday-2",
+    original_image_id: "demo-original-2",
+    shop_name: "온유어데이",
+    crop_image_url: "./assets/onyourday-cakes-2.png",
+    original_image_url: "./assets/onyourday-cakes-2.png",
+    all_tags: {
+      shape: ["원형"],
+      dominant_color: ["화이트", "그린"],
+      visual_style: ["심플", "레터링중심"],
+      lettering_type: ["중앙레터링"],
+      border_type: ["크림테두리"],
+      cream_decoration: ["꽃"],
+      topping_decoration: ["없음"],
+      character_type: ["없음"],
+      text_presence: ["있음"],
+    },
+  },
+  {
+    cake_crop_id: "demo-onyourday-3",
+    original_image_id: "demo-original-3",
+    shop_name: "온유어데이",
+    crop_image_url: "./assets/onyourday-cakes-3.png",
+    original_image_url: "./assets/onyourday-cakes-3.png",
+    all_tags: {
+      shape: ["원형"],
+      dominant_color: ["핑크", "퍼플"],
+      visual_style: ["러블리", "화려함"],
+      lettering_type: ["중앙레터링"],
+      border_type: ["점선테두리"],
+      cream_decoration: ["하트"],
+      topping_decoration: ["진주"],
+      character_type: ["없음"],
+      text_presence: ["있음"],
+    },
+  },
+  {
+    cake_crop_id: "demo-onyourday-4",
+    original_image_id: "demo-original-4",
+    shop_name: "온유어데이",
+    crop_image_url: "./assets/onyourday-cakes-4.png",
+    original_image_url: "./assets/onyourday-cakes-4.png",
+    all_tags: {
+      shape: ["원형"],
+      dominant_color: ["화이트", "핑크"],
+      visual_style: ["캐릭터", "러블리"],
+      lettering_type: ["중앙레터링"],
+      border_type: ["크림테두리"],
+      cream_decoration: ["리본"],
+      topping_decoration: ["반짝이"],
+      character_type: ["기타캐릭터"],
+      text_presence: ["있음"],
+    },
+  },
+];
 const surveyQuestions = [
   "케이크 디자인을 선택하는 과정이 간편했나요?",
   "커스텀 옵션(문구, 색상 등) 설정이 직관적이었나요?",
@@ -323,12 +409,14 @@ function updateSummary() {
 function imageUrl(path) {
   if (!path) return "./assets/cake-hero.jpg";
   if (/^https?:\/\//.test(path)) return path;
+  if (path.startsWith("./") || path.startsWith("assets/")) return path;
   return `${API_BASE_URL}${path}`;
 }
 
 function thumbUrl(path) {
   if (!path) return "./assets/cake-hero.jpg";
   if (/^https?:\/\//.test(path)) return path;
+  if (path.startsWith("./") || path.startsWith("assets/")) return path;
   const fileName = path.split("/").pop();
   const stem = fileName.replace(/\.[^.]+$/, "");
   return `${API_BASE_URL}/static/thumbs/crops/${encodeURIComponent(stem)}.webp`;
@@ -387,6 +475,32 @@ function buildRecommendTags() {
   addTag(tags, "character_type", state.character === "있음" ? "기타캐릭터" : "없음");
 
   return tags;
+}
+
+function scoreDemoRecommendation(item, requestedTags) {
+  const matchedTags = {};
+  const score = Object.entries(requestedTags).reduce((total, [key, values]) => {
+    const itemValues = item.all_tags[key] || [];
+    const matches = values.filter((value) => itemValues.includes(value));
+    if (!matches.length) return total;
+    matchedTags[key] = matches;
+    return total + (TAG_WEIGHTS[key] || 1);
+  }, 0);
+
+  return {
+    ...item,
+    score,
+    matched_tags: matchedTags,
+  };
+}
+
+function buildDemoRecommendations(limit = 8) {
+  const requestedTags = buildRecommendTags();
+  return demoRecommendations
+    .map((item) => scoreDemoRecommendation(item, requestedTags))
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
 }
 
 function setRecommendationStatus(message) {
@@ -461,7 +575,6 @@ async function uploadCharacterReference(file) {
 
 async function fetchRecommendations() {
   const requestId = ++recommendationRequestId;
-  const hadResults = recommendationResults.length > 0;
   setRecommendationStatus("선택 옵션과 비슷한 케이크를 찾는 중입니다.");
 
   try {
@@ -486,16 +599,15 @@ async function fetchRecommendations() {
     );
   } catch (error) {
     if (requestId !== recommendationRequestId) return;
-    if (!hadResults) {
-      recommendationResults = [];
-      selectedRecommendation = null;
-      renderRecommendations();
-      updateRecommendationViews();
-    }
+    recommendationResults = buildDemoRecommendations(8);
+    selectedRecommendation = recommendationResults[0] || null;
+    resetCustomizeState();
+    renderRecommendations();
+    updateRecommendationViews();
     setRecommendationStatus(
-      hadResults
-        ? "새 추천을 불러오지 못해 기존 추천 결과를 유지했습니다."
-        : "추천 API 연결에 실패했습니다. 백엔드 서버가 켜져 있는지 확인해주세요."
+      recommendationResults.length
+        ? "배포 페이지에서는 샘플 추천 데이터로 보여드리고 있어요."
+        : "추천 API 연결에 실패했고 샘플 조건에도 맞는 결과가 없습니다."
     );
     console.warn("Recommendation request failed:", error.message);
   }
