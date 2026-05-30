@@ -745,6 +745,61 @@ function renderCustomizeDiff(diffTags) {
   `).join("");
 }
 
+function buildCustomizePayload() {
+  return {
+    cake_crop_id: selectedRecommendation.cake_crop_id,
+    target_tags: buildRecommendTags(),
+    lettering_text: document.getElementById("lettering")?.value.trim() || null,
+    extra_request: document.getElementById("extraCustomizeRequest")?.value.trim() || null,
+    character_description: document.getElementById("characterDescription")?.value.trim() || null,
+    character_reference_image_url: state.character === "있음" ? characterReferenceImageUrl : null,
+  };
+}
+
+function buildLocalCustomizePreview() {
+  const targetTags = buildRecommendTags();
+  const sourceTags = selectedRecommendation?.all_tags || {};
+  const diffTags = {};
+
+  Object.entries(targetTags).forEach(([key, targetValues]) => {
+    const sourceValues = sourceTags[key] || [];
+    const hasMatch = targetValues.some((value) => sourceValues.includes(value));
+    if (!hasMatch) {
+      diffTags[key] = {
+        from: sourceValues,
+        to: targetValues,
+      };
+    }
+  });
+
+  const extraRequest = document.getElementById("extraCustomizeRequest")?.value.trim();
+  const characterDescription = document.getElementById("characterDescription")?.value.trim();
+  const requestNotes = [extraRequest, characterDescription ? `캐릭터 설명: ${characterDescription}` : ""]
+    .filter(Boolean)
+    .join(" / ");
+
+  return {
+    status: "demo",
+    base_crop_image_url: selectedRecommendation?.crop_image_url,
+    generated_image_url: "./assets/ai-cake.png",
+    diff_tags: diffTags,
+    prompt: [
+      "배포 데모에서는 실제 AI API 대신 수정 요청사항을 시각화합니다.",
+      "선택 옵션과 추천 이미지의 차이를 반영해 케이크 색감, 장식, 문구, 캐릭터 요소를 조정하는 흐름입니다.",
+      requestNotes ? `추가 요청: ${requestNotes}` : "",
+    ].filter(Boolean).join("\n"),
+  };
+}
+
+function applyCustomizePreview(data, message) {
+  customizePreviewData = data;
+  updateCustomizeProgress("diff");
+  renderCustomizeDiff(data.diff_tags);
+  document.getElementById("customizePrompt").textContent = data.prompt;
+  setCustomizeStatus(message);
+  return data;
+}
+
 async function previewCustomize() {
   if (!selectedRecommendation) {
     setCustomizeStatus("먼저 추천 결과를 선택해주세요.");
@@ -752,26 +807,21 @@ async function previewCustomize() {
   }
   updateCustomizeProgress("analyze");
   setCustomizeStatus("변경 요청사항을 계산하는 중입니다.");
-  const response = await fetch(`${API_BASE_URL}/customize/preview`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      cake_crop_id: selectedRecommendation.cake_crop_id,
-      target_tags: buildRecommendTags(),
-      lettering_text: document.getElementById("lettering")?.value.trim() || null,
-      extra_request: document.getElementById("extraCustomizeRequest")?.value.trim() || null,
-      character_description: document.getElementById("characterDescription")?.value.trim() || null,
-      character_reference_image_url: state.character === "있음" ? characterReferenceImageUrl : null,
-    }),
-  });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const data = await response.json();
-  customizePreviewData = data;
-  updateCustomizeProgress("diff");
-  renderCustomizeDiff(data.diff_tags);
-  document.getElementById("customizePrompt").textContent = data.prompt;
-  setCustomizeStatus("AI가 수정해야 할 차이를 정리했습니다.");
-  return data;
+  try {
+    const response = await fetch(`${API_BASE_URL}/customize/preview`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(buildCustomizePayload()),
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return applyCustomizePreview(await response.json(), "AI가 수정해야 할 차이를 정리했습니다.");
+  } catch (error) {
+    console.warn("Customize preview request failed:", error.message);
+    return applyCustomizePreview(
+      buildLocalCustomizePreview(),
+      "배포 페이지에서는 데모 방식으로 변경 요청사항을 보여드려요."
+    );
+  }
 }
 
 async function generateCustomize() {
@@ -788,12 +838,7 @@ async function generateCustomize() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        cake_crop_id: selectedRecommendation.cake_crop_id,
-        target_tags: buildRecommendTags(),
-        lettering_text: document.getElementById("lettering")?.value.trim() || null,
-        extra_request: document.getElementById("extraCustomizeRequest")?.value.trim() || null,
-        character_description: document.getElementById("characterDescription")?.value.trim() || null,
-        character_reference_image_url: state.character === "있음" ? characterReferenceImageUrl : null,
+        ...buildCustomizePayload(),
         model: "gpt-image-1-mini",
       }),
     });
@@ -811,8 +856,18 @@ async function generateCustomize() {
     updateRecommendationViews();
     setCustomizeStatus("AI 수정 결과가 생성되었습니다.");
   } catch (error) {
-    updateCustomizeProgress(customizePreviewData ? "diff" : "idle");
-    setCustomizeStatus(`AI 수정 실패: ${error.message}`);
+    console.warn("Customize generate request failed:", error.message);
+    const data = customizePreviewData || buildLocalCustomizePreview();
+    customizePreviewData = data;
+    renderCustomizeDiff(data.diff_tags);
+    document.getElementById("customizePrompt").textContent = data.prompt;
+    generatedCustomizeImageUrl = data.generated_image_url || "./assets/ai-cake.png";
+    document.getElementById("customizeBaseImage").src = imageUrl(data.base_crop_image_url);
+    document.getElementById("customizeGeneratedImage").src = imageUrl(generatedCustomizeImageUrl);
+    document.getElementById("customizeCompare").hidden = false;
+    updateCustomizeProgress("ready");
+    updateRecommendationViews();
+    setCustomizeStatus("배포 페이지에서는 데모 AI 수정 이미지로 결과를 보여드려요.");
   } finally {
     if (button) button.disabled = false;
   }
