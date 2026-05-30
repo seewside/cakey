@@ -230,12 +230,16 @@ figure {
 }
 
 .primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   min-height: 58px;
   border: 0;
   border-radius: 28px;
   color: #5f4b53;
   font-weight: 900;
+  text-decoration: none;
   box-shadow: 0 12px 24px rgba(127, 78, 105, 0.13);
   cursor: pointer;
   transition: transform 180ms ease, filter 180ms ease;
@@ -253,6 +257,7 @@ figure {
 
 .primary.pink { background: var(--pink); }
 .primary.cream { background: var(--cream); }
+.primary.admin-link { background: rgba(255, 255, 255, 0.84); }
 
 .cakey-special {
   padding: 28px;

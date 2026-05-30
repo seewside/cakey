@@ -29,7 +29,7 @@
       gtag('js', new Date());
       gtag('config', 'G-RJ90P56VRB');
     </script>
-    <link rel="stylesheet" href="./styles.css?v=20260527-shop-info-card-fix" />
+    <link rel="stylesheet" href="./styles.css?v=20260530-order-admin" />
   </head>
   <body>
     <main class="app-shell" aria-live="polite">
@@ -52,6 +52,7 @@
         <div class="home-actions reveal">
           <button class="primary pink" data-next="options">주문자로 체험하기</button>
           <button class="primary cream" data-next="business-pending">사업자로 체험하기</button>
+          <a class="primary admin-link" href="https://cakey-backend.onrender.com/orders/admin" target="_blank" rel="noreferrer">관리자 주문 조회</a>
         </div>
 
         <section class="cakey-special reveal">
@@ -356,18 +357,18 @@
         <form class="order-form reveal">
           <fieldset>
             <legend>픽업 정보</legend>
-            <label>픽업 날짜<input type="date" value="2026-05-20" /></label>
-            <label>픽업 시간<input type="time" value="14:30" /></label>
+            <label>픽업 날짜<input id="pickupDate" type="date" value="2026-05-20" /></label>
+            <label>픽업 시간<input id="pickupTime" type="time" value="14:30" /></label>
           </fieldset>
           <fieldset>
             <legend>주문자 정보</legend>
-            <label>성함<input type="text" value="김케이" /></label>
-            <label>연락처<input type="tel" value="010-1234-5678" /></label>
+            <label>성함<input id="customerName" type="text" value="김케이" /></label>
+            <label>연락처<input id="customerPhone" type="tel" value="010-1234-5678" /></label>
           </fieldset>
           <label class="requests">
             Special Requests
             <span>알레르기 정보나 요청사항을 적어주세요.</span>
-            <textarea placeholder="원하는 색감, 문구 위치, 픽업 메모 등을 입력하세요."></textarea>
+            <textarea id="orderMemo" placeholder="원하는 색감, 문구 위치, 픽업 메모 등을 입력하세요."></textarea>
           </label>
           <section class="application-preview" id="orderApplicationPreview" hidden>
             <h2>가게 전달용 신청 내용</h2>
@@ -384,7 +385,8 @@
             </div>
           </section>
           <p class="reservation-note">주문 내역은 매장 확인 후 확정됩니다. 확인 대기 시간은 평균 30분 이내입니다.</p>
-          <button type="button" class="primary cream" data-next="survey">주문 완료하기</button>
+          <p class="survey-status" id="orderSaveStatus" role="status" aria-live="polite"></p>
+          <button type="button" class="primary cream" id="submitOrder">주문 완료하기</button>
         </form>
       </section>
 
@@ -446,6 +448,6 @@
     </main>
 
     <script src="./survey-config.js?v=20260530-new-survey-endpoint"></script>
-    <script src="./app.js?v=20260530-render-backend"></script>
+    <script src="./app.js?v=20260530-order-admin"></script>
   </body>
 </html>

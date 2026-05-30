@@ -937,6 +937,71 @@ function collectSurveyPayload() {
   };
 }
 
+function collectOrderPayload() {
+  return {
+    pageUrl: window.location.href,
+    userAgent: navigator.userAgent,
+    options: {
+      size: state.size,
+      shape: state.shape,
+      flavor: state.flavor,
+      style: state.style,
+      mood: state.mood,
+      border: state.border,
+      letteringType: state.letteringType,
+      topping: state.topping,
+      color: state.color,
+      cream: state.cream,
+      character: state.character,
+      plate: state.plate,
+      price: totalPrice(),
+      pickupDate: document.getElementById("pickupDate")?.value || "",
+      pickupTime: document.getElementById("pickupTime")?.value || "",
+      customerName: document.getElementById("customerName")?.value.trim() || "",
+      customerPhone: document.getElementById("customerPhone")?.value.trim() || "",
+      orderMemo: document.getElementById("orderMemo")?.value.trim() || "",
+    },
+    recommendation: {
+      cakeCropId: selectedRecommendation?.cake_crop_id || "",
+      originalImageId: selectedRecommendation?.original_image_id || "",
+      shopName: selectedRecommendation ? displayShopName(selectedRecommendation) : "",
+      score: selectedRecommendation?.score || "",
+      cropImageUrl: selectedRecommendation?.crop_image_url || "",
+      originalImageUrl: selectedRecommendation?.original_image_url || "",
+      matchedTags: selectedRecommendation?.matched_tags || {},
+      allTags: selectedRecommendation?.all_tags || {},
+    },
+    customization: {
+      generatedImageUrl: generatedCustomizeImageUrl || "",
+      baseCropImageUrl: customizePreviewData?.base_crop_image_url || selectedRecommendation?.crop_image_url || "",
+      diffTags: customizePreviewData?.diff_tags || {},
+      prompt: customizePreviewData?.prompt || "",
+      letteringText: document.getElementById("lettering")?.value.trim() || "",
+      extraRequest: document.getElementById("extraCustomizeRequest")?.value.trim() || "",
+      characterDescription: document.getElementById("characterDescription")?.value.trim() || "",
+      characterReferenceImageUrl: characterReferenceImageUrl || "",
+    },
+  };
+}
+
+function setOrderStatus(message) {
+  const status = document.getElementById("orderSaveStatus");
+  if (status) status.textContent = message;
+}
+
+async function saveOrder() {
+  const response = await fetch(`${API_BASE_URL}/orders`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(collectOrderPayload()),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.detail || `HTTP ${response.status}`);
+  }
+  return data;
+}
+
 function validateSurvey() {
   const missing = [];
 
@@ -1055,6 +1120,22 @@ document.getElementById("characterReferenceInput")?.addEventListener("change", a
 });
 
 document.getElementById("clearCharacterReference")?.addEventListener("click", clearCharacterReference);
+
+document.getElementById("submitOrder")?.addEventListener("click", async () => {
+  const button = document.getElementById("submitOrder");
+  button.disabled = true;
+  setOrderStatus("주문서와 이미지를 저장하고 있어요.");
+  try {
+    const result = await saveOrder();
+    setOrderStatus(`주문번호 ${result.order_id}로 저장되었습니다.`);
+    showScreen("survey");
+  } catch (error) {
+    console.error(error);
+    setOrderStatus(`주문 저장 실패: ${error.message}`);
+  } finally {
+    button.disabled = false;
+  }
+});
 
 document.getElementById("submitSurvey").addEventListener("click", async () => {
   if (!validateSurvey()) return;
