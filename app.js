@@ -3,7 +3,7 @@ const stack = ["home"];
 const API_BASE_URL =
   window.CAKEY_API_BASE_URL ||
   localStorage.getItem("CAKEY_API_BASE_URL") ||
-  "http://127.0.0.1:8000";
+  "https://cakey-backend.onrender.com";
 const TAG_WEIGHTS = {
   character_type: 4,
   dominant_color: 3,
