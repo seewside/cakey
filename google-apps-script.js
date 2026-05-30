@@ -1,8 +1,8 @@
-const SPREADSHEET_ID = "1__HSLMmRvGQGWqgH7we0VkAvbX1M6NJO";
+const SPREADSHEET_ID = "1Dwlh8sDwvU3-z2KX37iBAdOLcHYlztXTYwHfgc6-HxE";
 const SHEET_NAME = "cakey_사용자_만족도_데이터";
 
 const HEADERS = [
-  "저장일시",
+  "저장일시(KST)",
   "제출일시(UTC)",
   "제출일시(KST)",
   "페이지",
@@ -26,17 +26,28 @@ const HEADERS = [
   "캐릭터",
   "판 레터링",
   "가격",
+  "추천 crop ID",
+  "추천 가게명",
+  "AI 수정 이미지 URL",
+  "캐릭터 참고 이미지 URL",
   "브라우저",
 ];
 
 function doPost(event) {
+  return savePayload(parsePayload(event));
+}
+
+function doGet(event) {
   try {
-    const payload = JSON.parse(event.postData.contents || "{}");
+    if (event && event.parameter && event.parameter.payload) {
+      return savePayload(parsePayload(event));
+    }
+
     const sheet = getSurveySheet();
-    sheet.appendRow(toRow(payload));
 
     return jsonResponse({
       ok: true,
+      message: "CAKEY survey endpoint is ready. Submit survey responses with payload.",
       spreadsheetId: SPREADSHEET_ID,
       spreadsheetUrl: sheet.getParent().getUrl(),
       sheetName: sheet.getName(),
@@ -50,13 +61,17 @@ function doPost(event) {
   }
 }
 
-function doGet() {
+function savePayload(payload) {
+  const lock = LockService.getScriptLock();
   try {
+    lock.waitLock(10000);
     const sheet = getSurveySheet();
+    const nextRow = sheet.getLastRow() + 1;
+    sheet.getRange(nextRow, 1, 1, HEADERS.length).setValues([toRow(payload)]);
 
     return jsonResponse({
       ok: true,
-      message: "CAKEY survey endpoint is ready. Submit survey responses with POST.",
+      row: nextRow,
       spreadsheetId: SPREADSHEET_ID,
       spreadsheetUrl: sheet.getParent().getUrl(),
       sheetName: sheet.getName(),
@@ -67,19 +82,40 @@ function doGet() {
       spreadsheetId: SPREADSHEET_ID,
       message: error.message,
     });
+  } finally {
+    lock.releaseLock();
   }
+}
+
+function parsePayload(event) {
+  if (event.parameter && event.parameter.payload) {
+    return JSON.parse(event.parameter.payload);
+  }
+
+  const contents = event.postData && event.postData.contents ? event.postData.contents : "{}";
+  if (contents.indexOf("payload=") === 0) {
+    return JSON.parse(decodeURIComponent(contents.replace(/^payload=/, "").replace(/\+/g, " ")));
+  }
+
+  return JSON.parse(contents || "{}");
 }
 
 function getSurveySheet() {
   const spreadsheet = openTargetSpreadsheet();
   const sheet = spreadsheet.getSheetByName(SHEET_NAME) || spreadsheet.insertSheet(SHEET_NAME);
-
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(HEADERS);
-    sheet.setFrozenRows(1);
-  }
+  ensureHeaderRow(sheet);
 
   return sheet;
+}
+
+function ensureHeaderRow(sheet) {
+  const currentHeaders = sheet.getRange(1, 1, 1, HEADERS.length).getValues()[0];
+  const shouldUpdateHeaders = HEADERS.some((header, index) => currentHeaders[index] !== header);
+
+  if (shouldUpdateHeaders) {
+    sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+    sheet.setFrozenRows(1);
+  }
 }
 
 function openTargetSpreadsheet() {
@@ -87,9 +123,7 @@ function openTargetSpreadsheet() {
     return SpreadsheetApp.openById(SPREADSHEET_ID);
   } catch (error) {
     throw new Error(
-      "Target document must be a native Google Sheets spreadsheet. " +
-      "Open the linked Excel file in Google Sheets and convert it with File > Save as Google Sheets, " +
-      "then redeploy this script with the converted spreadsheet ID. Original error: " + error.message
+      "SPREADSHEET_ID must point to a native Google Sheets spreadsheet. Original error: " + error.message
     );
   }
 }
@@ -105,7 +139,7 @@ function toRow(payload) {
   const order = payload.order || {};
 
   return [
-    new Date(),
+    Utilities.formatDate(new Date(), "Asia/Seoul", "yyyy-MM-dd HH:mm:ss"),
     payload.submittedAt || "",
     payload.submittedAtLocal || "",
     payload.pageUrl || "",
@@ -129,6 +163,10 @@ function toRow(payload) {
     order.character || "",
     order.plate || "",
     order.price || "",
+    order.recommendedCakeCropId || "",
+    order.recommendedShopName || "",
+    order.generatedCustomizeImageUrl || "",
+    order.characterReferenceImageUrl || "",
     payload.userAgent || "",
   ];
 }

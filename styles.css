@@ -753,6 +753,319 @@ input {
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.65);
   font-weight: 760;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.recommendations {
+  margin-top: 24px;
+}
+
+.recommendations h2,
+.ai-customize h2,
+.application-preview h2 {
+  color: var(--deep);
+  font-size: 22px;
+}
+
+.recommendations > p,
+.ai-customize > p,
+.application-preview p {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 760;
+  line-height: 1.55;
+}
+
+.recommendation-list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(138px, 42%);
+  gap: 12px;
+  margin-top: 14px;
+  padding: 2px 2px 14px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+.recommendation-card {
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  gap: 6px;
+  min-width: 0;
+  min-height: 222px;
+  padding: 10px;
+  border: 2px solid transparent;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--ink);
+  text-align: left;
+  box-shadow: 0 12px 24px rgba(127, 78, 105, 0.08);
+  cursor: pointer;
+}
+
+.recommendation-card.active {
+  border-color: var(--pink);
+  background: #fff7fa;
+}
+
+.recommendation-card img {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 16px;
+  object-fit: cover;
+  background: #f3e8eb;
+}
+
+.recommendation-card span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.recommendation-card strong {
+  color: var(--deep);
+  font-size: 15px;
+}
+
+.recommendation-card small {
+  color: #675c61;
+  font-size: 11px;
+  font-weight: 760;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.ai-customize,
+.application-preview {
+  margin-top: 26px;
+  padding: 24px;
+  border-radius: 28px;
+  background: var(--card);
+  box-shadow: 0 16px 34px rgba(127, 78, 105, 0.08);
+}
+
+.ai-customize .primary {
+  min-height: 48px;
+  margin-top: 12px;
+}
+
+.customize-progress {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.customize-progress li {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 54px;
+  padding: 8px 6px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--muted);
+  text-align: center;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.customize-progress li::before {
+  content: "";
+  display: block;
+  width: 12px;
+  height: 12px;
+  margin-bottom: 5px;
+  border: 2px solid #d9cdd2;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.customize-progress li.active {
+  background: #fff0bd;
+  color: var(--deep);
+}
+
+.customize-progress li.active::before {
+  border-color: var(--deep);
+  border-top-color: transparent;
+  animation: spinStep 750ms linear infinite;
+}
+
+.customize-progress li.done {
+  background: #ffeaf3;
+  color: var(--deep);
+}
+
+.customize-progress li.done::before {
+  border-color: var(--deep);
+  background: var(--deep);
+  box-shadow: inset 0 0 0 3px #ffeaf3;
+}
+
+@keyframes spinStep {
+  to { transform: rotate(360deg); }
+}
+
+.customize-diff {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.customize-row {
+  display: grid;
+  gap: 4px;
+  padding: 11px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.customize-row span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.extra-request,
+.character-detail,
+.character-reference {
+  display: block;
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.character-detail,
+.character-reference {
+  background: #fff;
+  box-shadow: 0 10px 18px rgba(127, 78, 105, 0.08);
+}
+
+.extra-request span,
+.character-detail span,
+.character-reference label > span {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--deep);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.extra-request textarea,
+.character-detail textarea {
+  min-height: 82px;
+  border-radius: 18px;
+  background: #f3e8eb;
+}
+
+.extra-request small,
+.character-detail small,
+.character-reference > small {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.extra-request small,
+.character-detail small {
+  text-align: right;
+}
+
+.character-reference input {
+  width: 100%;
+  padding: 11px;
+  border: 1px dashed #d9b8c7;
+  border-radius: 16px;
+  background: #fff7fa;
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.character-reference-preview {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.character-reference-preview img {
+  width: 92px;
+  aspect-ratio: 1;
+  border-radius: 16px;
+  object-fit: cover;
+  background: #f3e8eb;
+}
+
+.character-reference-preview button {
+  width: fit-content;
+  min-width: 74px;
+  padding: 10px 13px;
+  border: 0;
+  border-radius: 999px;
+  background: #f3e8eb;
+  color: var(--deep);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.customize-prompt {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #f8fafc;
+  color: #5f5559;
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.customize-prompt:empty,
+.customize-diff:empty {
+  display: none;
+}
+
+.customize-compare,
+.application-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.customize-compare figure,
+.application-compare figure {
+  margin: 0;
+}
+
+.customize-compare img,
+.application-compare img {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 16px;
+  object-fit: cover;
+  background: #f3e8eb;
+}
+
+.customize-compare figcaption,
+.application-compare figcaption {
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-align: center;
 }
 
 .speech {
@@ -833,6 +1146,7 @@ input {
   color: var(--muted);
   line-height: 1.65;
   font-weight: 650;
+  white-space: pre-line;
 }
 
 .summary-card {

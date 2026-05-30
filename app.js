@@ -1,5 +1,9 @@
 const screens = [...document.querySelectorAll(".screen")];
 const stack = ["home"];
+const API_BASE_URL =
+  window.CAKEY_API_BASE_URL ||
+  localStorage.getItem("CAKEY_API_BASE_URL") ||
+  "http://127.0.0.1:8000";
 const surveyQuestions = [
   "케이크 디자인을 선택하는 과정이 간편했나요?",
   "커스텀 옵션(문구, 색상 등) 설정이 직관적이었나요?",
@@ -90,6 +94,12 @@ const state = {
 const customColorToken = "custom-color";
 let customColor = "#ffd4e3";
 let colorPickerOpen = false;
+let recommendationResults = [];
+let selectedRecommendation = null;
+let recommendationRequestId = 0;
+let customizePreviewData = null;
+let generatedCustomizeImageUrl = null;
+let characterReferenceImageUrl = null;
 
 const colors = [
   "#ffffff",
@@ -133,6 +143,8 @@ function showScreen(name, push = true) {
   }
 
   updateSummary();
+  if (name === "preview") fetchRecommendations();
+  if (["shop", "confirm", "order"].includes(name)) updateRecommendationViews();
   observeReveals();
   setBottomNav(name);
 }
@@ -171,6 +183,7 @@ function normalizeLunchboxRules() {
 
 function selectOption(group, label) {
   state[group] = label;
+  if (group === "character" && label === "없음") clearCharacterReference();
   normalizeLunchboxRules();
   renderOptions();
   updateSummary();
@@ -275,6 +288,7 @@ function renderOptions() {
   }
 
   document.getElementById("totalPrice").textContent = formatter.format(totalPrice());
+  updateCharacterReferenceControls();
 }
 
 function updateSummary() {
@@ -282,6 +296,18 @@ function updateSummary() {
   document.getElementById("summaryPrice").textContent = price;
   const summary = document.getElementById("summaryList");
   if (!summary) return;
+  const recommendationLine = selectedRecommendation
+    ? `
+      <dt>RECOMMENDED DESIGN</dt>
+      <dd>${displayShopName(selectedRecommendation)} · 점수 ${selectedRecommendation.score}</dd>
+    `
+    : "";
+  const aiLine = generatedCustomizeImageUrl
+    ? `
+      <dt>AI CUSTOM IMAGE</dt>
+      <dd>사용자 선택 옵션이 반영된 AI 수정 이미지 포함</dd>
+    `
+    : "";
   summary.innerHTML = `
     <dt>SIZE · SHAPE · FLAVOR</dt>
     <dd>${state.size} · ${state.shape} · ${state.flavor}</dd>
@@ -289,7 +315,395 @@ function updateSummary() {
     <dd>${state.style} · ${state.mood}</dd>
     <dt>DECORATIONS</dt>
     <dd>${[state.border, state.topping, state.cream, state.character === "있음" ? "캐릭터" : "", state.plate === "있음" ? "판 레터링" : ""].filter(Boolean).join(" · ")}</dd>
+    ${recommendationLine}
+    ${aiLine}
   `;
+}
+
+function imageUrl(path) {
+  if (!path) return "./assets/cake-hero.jpg";
+  if (/^https?:\/\//.test(path)) return path;
+  return `${API_BASE_URL}${path}`;
+}
+
+function thumbUrl(path) {
+  if (!path) return "./assets/cake-hero.jpg";
+  if (/^https?:\/\//.test(path)) return path;
+  const fileName = path.split("/").pop();
+  const stem = fileName.replace(/\.[^.]+$/, "");
+  return `${API_BASE_URL}/static/thumbs/crops/${encodeURIComponent(stem)}.webp`;
+}
+
+function tagValues(tags) {
+  return Object.values(tags || {}).flat();
+}
+
+function formatTags(tags) {
+  const values = tagValues(tags);
+  return values.length ? values.join(" · ") : "매칭 태그 없음";
+}
+
+function displayShopName(item) {
+  const rawName = item?.shop_name?.trim();
+  if (!rawName || rawName.toLowerCase() === "unknown") return "온유어데이";
+  return rawName;
+}
+
+function colorToTag(color) {
+  const colorMap = {
+    "#ffffff": "화이트",
+    "#ffd4e3": "핑크",
+    "#aee3f2": "블루",
+    "#fff7bb": "옐로우",
+    "#333333": "블랙",
+    "#e8edf7": "퍼플",
+    "#d5ceca": "브라운",
+    "#c7e9ce": "그린",
+  };
+  return colorMap[color.toLowerCase()] || "믹스";
+}
+
+function addTag(tags, key, value, allowedValues = null) {
+  if (!value || value === "기타") return;
+  if (allowedValues && !allowedValues.includes(value)) return;
+  tags[key] = [...new Set([...(tags[key] || []), value])];
+}
+
+function buildRecommendTags() {
+  const tags = {};
+  const lettering = document.getElementById("lettering")?.value.trim();
+  const shape = state.shape === "사각형" ? "사각" : state.shape;
+
+  addTag(tags, "shape", shape, ["원형", "하트", "사각"]);
+  addTag(tags, "dominant_color", colorToTag(state.color));
+  addTag(tags, "visual_style", state.style, ["심플", "러블리", "캐릭터", "레터링중심", "화려함"]);
+  addTag(tags, "visual_style", state.mood, ["심플", "러블리", "캐릭터", "레터링중심", "화려함"]);
+  addTag(tags, "border_type", state.border);
+  addTag(tags, "lettering_type", state.letteringType, ["없음", "중앙레터링", "꽉찬레터링", "2겹레터링", "무지개레터링"]);
+  addTag(tags, "cream_decoration", state.cream);
+  addTag(tags, "topping_decoration", state.topping);
+  addTag(tags, "board_lettering", state.plate);
+  addTag(tags, "text_presence", lettering ? "있음" : "없음");
+  addTag(tags, "character_type", state.character === "있음" ? "기타캐릭터" : "없음");
+
+  return tags;
+}
+
+function setRecommendationStatus(message) {
+  const status = document.getElementById("recommendationStatus");
+  if (status) status.textContent = message;
+}
+
+function resetCustomizeState() {
+  customizePreviewData = null;
+  generatedCustomizeImageUrl = null;
+  renderCustomizeDiff({});
+  document.getElementById("customizePrompt").textContent = "";
+  document.getElementById("customizeCompare").hidden = true;
+  updateCustomizeProgress("idle");
+  setCustomizeStatus("추천 결과를 선택하면 변경 요청사항을 확인할 수 있어요.");
+}
+
+function setCharacterReferenceStatus(message) {
+  const status = document.getElementById("characterReferenceStatus");
+  if (status) status.textContent = message;
+}
+
+function updateCharacterReferenceControls() {
+  const panel = document.getElementById("characterReferencePanel");
+  const description = document.querySelector(".character-detail");
+  const isEnabled = state.character === "있음";
+  if (panel) panel.hidden = !isEnabled;
+  if (description) description.hidden = !isEnabled;
+}
+
+function clearCharacterReference() {
+  characterReferenceImageUrl = null;
+  const input = document.getElementById("characterReferenceInput");
+  const preview = document.getElementById("characterReferencePreview");
+  const image = document.getElementById("characterReferenceImage");
+  if (input) input.value = "";
+  if (preview) preview.hidden = true;
+  if (image) image.src = "./assets/cake-hero.jpg";
+  setCharacterReferenceStatus("참고 이미지는 AI 수정 단계에서만 사용됩니다.");
+}
+
+async function uploadCharacterReference(file) {
+  if (!file) return;
+  const localPreviewUrl = URL.createObjectURL(file);
+  const preview = document.getElementById("characterReferencePreview");
+  const image = document.getElementById("characterReferenceImage");
+  if (image) image.src = localPreviewUrl;
+  if (preview) preview.hidden = false;
+  setCharacterReferenceStatus("참고 이미지를 업로드하는 중입니다.");
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/customize/reference-image`, {
+      method: "POST",
+      body: formData,
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    characterReferenceImageUrl = data.image_url;
+    if (image) image.src = imageUrl(characterReferenceImageUrl);
+    setCharacterReferenceStatus("참고 이미지가 AI 수정 요청에 포함됩니다.");
+  } catch (error) {
+    characterReferenceImageUrl = null;
+    if (preview) preview.hidden = true;
+    setCharacterReferenceStatus(`참고 이미지 업로드 실패: ${error.message}`);
+  } finally {
+    URL.revokeObjectURL(localPreviewUrl);
+  }
+}
+
+async function fetchRecommendations() {
+  const requestId = ++recommendationRequestId;
+  const hadResults = recommendationResults.length > 0;
+  setRecommendationStatus("선택 옵션과 비슷한 케이크를 찾는 중입니다.");
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/recommend`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tags: buildRecommendTags(), limit: 8 }),
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const data = await response.json();
+    if (requestId !== recommendationRequestId) return;
+    recommendationResults = data.results || [];
+    selectedRecommendation = recommendationResults[0] || null;
+    resetCustomizeState();
+    renderRecommendations();
+    updateRecommendationViews();
+    setRecommendationStatus(
+      recommendationResults.length
+        ? `${recommendationResults.length}개의 추천 케이크를 찾았습니다.`
+        : "조건에 맞는 추천 결과가 아직 없습니다. 옵션을 조금 바꿔보세요."
+    );
+  } catch (error) {
+    if (requestId !== recommendationRequestId) return;
+    if (!hadResults) {
+      recommendationResults = [];
+      selectedRecommendation = null;
+      renderRecommendations();
+      updateRecommendationViews();
+    }
+    setRecommendationStatus(
+      hadResults
+        ? "새 추천을 불러오지 못해 기존 추천 결과를 유지했습니다."
+        : "추천 API 연결에 실패했습니다. 백엔드 서버가 켜져 있는지 확인해주세요."
+    );
+    console.warn("Recommendation request failed:", error.message);
+  }
+}
+
+function renderRecommendations() {
+  const list = document.getElementById("recommendationList");
+  if (!list) return;
+  list.innerHTML = "";
+
+  recommendationResults.forEach((item, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `recommendation-card${item === selectedRecommendation ? " active" : ""}`;
+    button.innerHTML = `
+      <img src="${thumbUrl(item.crop_image_url)}" alt="추천 케이크 ${index + 1}" loading="lazy" />
+      <span>추천 ${index + 1}</span>
+      <strong>점수 ${item.score}</strong>
+      <small>${formatTags(item.matched_tags)}</small>
+    `;
+    button.addEventListener("click", () => {
+      selectedRecommendation = item;
+      resetCustomizeState();
+      renderRecommendations();
+      updateRecommendationViews();
+    });
+    list.append(button);
+  });
+}
+
+function updateRecommendationViews() {
+  const item = selectedRecommendation;
+  const cropUrl = imageUrl(item?.crop_image_url);
+  const originalUrl = imageUrl(item?.original_image_url);
+  const finalImageUrl = generatedCustomizeImageUrl ? imageUrl(generatedCustomizeImageUrl) : cropUrl;
+  const otherImages = recommendationResults.filter((result) => result !== item);
+
+  const previewImage = document.getElementById("previewImage");
+  const summaryImage = document.getElementById("summaryImage");
+
+  if (previewImage) previewImage.src = cropUrl;
+  if (summaryImage) summaryImage.src = finalImageUrl;
+
+  const shopName = displayShopName(item);
+  const shopInfoTitle = document.getElementById("shopInfoTitle");
+  const shopInfoText = document.getElementById("shopInfoText");
+  if (shopInfoTitle) shopInfoTitle.textContent = shopName;
+  if (shopInfoText) {
+    shopInfoText.textContent = item
+      ? `✨Since 2020
+🎂군자동 369-16 어린이대공원역
+선택 옵션과 ${item.score}점으로 매칭된 실제 제작 사례입니다.`
+      : "선택한 옵션과 가장 가까운 실제 제작 사례입니다.";
+  }
+
+  document.getElementById("matchedTagLine").innerHTML = `<span>◎</span> ${formatTags(item?.matched_tags)}`;
+  document.getElementById("scoreLine").innerHTML = `<span>♛</span> 추천 점수 ${item?.score ?? 0}`;
+  document.getElementById("allTagLine").innerHTML = `<span>彩</span> ${formatTags(item?.all_tags)}`;
+  updateApplicationPreviews();
+  updateSummary();
+}
+
+function setCustomizeStatus(message) {
+  const status = document.getElementById("customizeStatus");
+  if (status) status.textContent = message;
+}
+
+function updateCustomizeProgress(stage) {
+  const stepOrder = ["analyze", "diff", "edit", "ready"];
+  const activeIndex = stepOrder.indexOf(stage);
+  document.querySelectorAll("#customizeProgress li").forEach((item, index) => {
+    item.classList.toggle("done", activeIndex > index || stage === "ready");
+    item.classList.toggle("active", stepOrder[index] === stage && stage !== "ready");
+  });
+  if (stage === "idle") {
+    document.querySelectorAll("#customizeProgress li").forEach((item) => {
+      item.classList.remove("done", "active");
+    });
+  }
+}
+
+function updateApplicationPreviews() {
+  const item = selectedRecommendation;
+  const hasGenerated = Boolean(item && generatedCustomizeImageUrl);
+  const cropUrl = imageUrl(item?.crop_image_url);
+  const generatedUrl = imageUrl(generatedCustomizeImageUrl);
+  const shopName = displayShopName(item);
+
+  [
+    "shopApplicationPreview",
+    "confirmApplicationPreview",
+    "orderApplicationPreview",
+  ].forEach((id) => {
+    const node = document.getElementById(id);
+    if (node) node.hidden = !hasGenerated;
+  });
+
+  [
+    "shopReferenceImage",
+    "confirmReferenceImage",
+    "orderReferenceImage",
+  ].forEach((id) => {
+    const image = document.getElementById(id);
+    if (image && item) image.src = cropUrl;
+  });
+
+  [
+    "shopAiImage",
+    "confirmAiImage",
+    "orderAiImage",
+  ].forEach((id) => {
+    const image = document.getElementById(id);
+    if (image && hasGenerated) image.src = generatedUrl;
+  });
+
+  const orderText = document.getElementById("orderApplicationText");
+  if (orderText && hasGenerated) {
+    orderText.textContent = `${shopName}에 기존 제작 참고 이미지와 사용자 의도 반영 AI 수정 이미지를 함께 전달합니다.`;
+  }
+}
+
+function renderCustomizeDiff(diffTags) {
+  const root = document.getElementById("customizeDiff");
+  if (!root) return;
+  const entries = Object.entries(diffTags || {});
+  if (!entries.length) {
+    root.innerHTML = '<div class="customize-row">추천 이미지와 선택 옵션의 주요 태그 차이가 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = entries.map(([key, diff]) => `
+    <div class="customize-row">
+      <span>${key}</span>
+      <strong>${(diff.from || []).join(" · ") || "없음"} → ${(diff.to || []).join(" · ") || "없음"}</strong>
+    </div>
+  `).join("");
+}
+
+async function previewCustomize() {
+  if (!selectedRecommendation) {
+    setCustomizeStatus("먼저 추천 결과를 선택해주세요.");
+    return null;
+  }
+  updateCustomizeProgress("analyze");
+  setCustomizeStatus("변경 요청사항을 계산하는 중입니다.");
+  const response = await fetch(`${API_BASE_URL}/customize/preview`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      cake_crop_id: selectedRecommendation.cake_crop_id,
+      target_tags: buildRecommendTags(),
+      lettering_text: document.getElementById("lettering")?.value.trim() || null,
+      extra_request: document.getElementById("extraCustomizeRequest")?.value.trim() || null,
+      character_description: document.getElementById("characterDescription")?.value.trim() || null,
+      character_reference_image_url: state.character === "있음" ? characterReferenceImageUrl : null,
+    }),
+  });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const data = await response.json();
+  customizePreviewData = data;
+  updateCustomizeProgress("diff");
+  renderCustomizeDiff(data.diff_tags);
+  document.getElementById("customizePrompt").textContent = data.prompt;
+  setCustomizeStatus("AI가 수정해야 할 차이를 정리했습니다.");
+  return data;
+}
+
+async function generateCustomize() {
+  if (!selectedRecommendation) {
+    setCustomizeStatus("먼저 추천 결과를 선택해주세요.");
+    return;
+  }
+  updateCustomizeProgress("edit");
+  setCustomizeStatus("AI 이미지 수정을 요청 중입니다. 30초 이상 걸릴 수 있습니다.");
+  const button = document.getElementById("generateCustomize");
+  if (button) button.disabled = true;
+  try {
+    const response = await fetch(`${API_BASE_URL}/customize/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cake_crop_id: selectedRecommendation.cake_crop_id,
+        target_tags: buildRecommendTags(),
+        lettering_text: document.getElementById("lettering")?.value.trim() || null,
+        extra_request: document.getElementById("extraCustomizeRequest")?.value.trim() || null,
+        character_description: document.getElementById("characterDescription")?.value.trim() || null,
+        character_reference_image_url: state.character === "있음" ? characterReferenceImageUrl : null,
+        model: "gpt-image-1-mini",
+      }),
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    customizePreviewData = data;
+    renderCustomizeDiff(data.diff_tags);
+    document.getElementById("customizePrompt").textContent = data.prompt;
+    if (data.status !== "ok") throw new Error(data.error || "AI 수정 실패");
+    generatedCustomizeImageUrl = data.generated_image_url;
+    document.getElementById("customizeBaseImage").src = imageUrl(data.base_crop_image_url);
+    document.getElementById("customizeGeneratedImage").src = imageUrl(data.generated_image_url);
+    document.getElementById("customizeCompare").hidden = false;
+    updateCustomizeProgress("ready");
+    updateRecommendationViews();
+    setCustomizeStatus("AI 수정 결과가 생성되었습니다.");
+  } catch (error) {
+    updateCustomizeProgress(customizePreviewData ? "diff" : "idle");
+    setCustomizeStatus(`AI 수정 실패: ${error.message}`);
+  } finally {
+    if (button) button.disabled = false;
+  }
 }
 
 function buildSurvey() {
@@ -348,6 +762,10 @@ function collectSurveyPayload() {
       character: state.character,
       plate: state.plate,
       price: totalPrice(),
+      recommendedCakeCropId: selectedRecommendation?.cake_crop_id || "",
+      recommendedShopName: selectedRecommendation ? displayShopName(selectedRecommendation) : "",
+      generatedCustomizeImageUrl: generatedCustomizeImageUrl || "",
+      characterReferenceImageUrl: characterReferenceImageUrl || "",
     },
   };
 }
@@ -375,19 +793,35 @@ function validateSurvey() {
 }
 
 async function saveSurveyResponse() {
+  const payload = collectSurveyPayload();
   const surveyWebAppUrl = window.CAKEY_SURVEY_WEB_APP_URL || "";
+  let saved = false;
 
-  if (!surveyWebAppUrl) {
-    throw new Error("CAKEY_SURVEY_WEB_APP_URL is not configured.");
+  if (surveyWebAppUrl) {
+    await submitSurveyToAppsScript(surveyWebAppUrl, payload);
+    saved = true;
   }
 
-  await fetch(surveyWebAppUrl, {
-    method: "POST",
+  try {
+    const response = await fetch(`${API_BASE_URL}/survey/responses`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (response.ok) saved = true;
+  } catch (error) {
+    console.warn("Backend survey save skipped:", error.message);
+  }
+
+  if (!saved) throw new Error("Survey save endpoint is not configured.");
+}
+
+function submitSurveyToAppsScript(url, payload) {
+  const endpoint = `${url}?payload=${encodeURIComponent(JSON.stringify(payload))}`;
+  return fetch(endpoint, {
+    method: "GET",
     mode: "no-cors",
-    headers: {
-      "Content-Type": "text/plain",
-    },
-    body: JSON.stringify(collectSurveyPayload()),
+    cache: "no-store",
   });
 }
 
@@ -441,6 +875,20 @@ document.getElementById("lettering").addEventListener("input", (event) => {
   document.getElementById("letterCount").textContent = event.target.value.length;
 });
 
+document.getElementById("extraCustomizeRequest")?.addEventListener("input", (event) => {
+  document.getElementById("extraRequestCount").textContent = event.target.value.length;
+});
+
+document.getElementById("characterDescription")?.addEventListener("input", (event) => {
+  document.getElementById("characterDescriptionCount").textContent = event.target.value.length;
+});
+
+document.getElementById("characterReferenceInput")?.addEventListener("change", async (event) => {
+  await uploadCharacterReference(event.target.files?.[0]);
+});
+
+document.getElementById("clearCharacterReference")?.addEventListener("click", clearCharacterReference);
+
 document.getElementById("submitSurvey").addEventListener("click", async () => {
   if (!validateSurvey()) return;
 
@@ -463,6 +911,22 @@ document.getElementById("submitSurvey").addEventListener("click", async () => {
 document.getElementById("goHome").addEventListener("click", () => {
   showScreen("home");
 });
+
+document.getElementById("refreshRecommendations")?.addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  fetchRecommendations();
+});
+
+document.getElementById("previewCustomize")?.addEventListener("click", async () => {
+  try {
+    await previewCustomize();
+  } catch (error) {
+    setCustomizeStatus(`변경 요청사항 생성 실패: ${error.message}`);
+  }
+});
+
+document.getElementById("generateCustomize")?.addEventListener("click", generateCustomize);
 
 renderOptions();
 buildSurvey();

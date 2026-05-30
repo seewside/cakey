@@ -7,6 +7,28 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>CAKEY 주문서</title>
+    <meta name="description" content="CAKEY에서 취향 옵션을 고르면 실제 제작 사례를 추천받고 AI 수정 이미지까지 확인할 수 있어요." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="CAKEY" />
+    <meta property="og:title" content="CAKEY | 커스텀 케이크 주문의 새로운 치트키" />
+    <meta property="og:description" content="원하는 디자인을 고르면 비슷한 실제 제작 케이크를 추천하고, AI 수정 이미지로 주문 의도를 전달해요." />
+    <meta property="og:url" content="https://seewside.github.io/cakey/" />
+    <meta property="og:image" content="https://seewside.github.io/cakey/assets/cakey-link-preview.png" />
+    <meta property="og:image:secure_url" content="https://seewside.github.io/cakey/assets/cakey-link-preview.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="CAKEY 로고와 커스텀 케이크 주문 서비스 설명" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CAKEY | 커스텀 케이크 주문의 새로운 치트키" />
+    <meta name="twitter:description" content="취향 옵션 기반 케이크 추천과 AI 수정 이미지를 한 번에 확인하세요." />
+    <meta name="twitter:image" content="https://seewside.github.io/cakey/assets/cakey-link-preview.png" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJ90P56VRB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-RJ90P56VRB');
+    </script>
     <link rel="stylesheet" href="./styles.css?v=20260527-shop-info-card-fix" />
   </head>
   <body>
@@ -139,6 +161,22 @@
           <section class="option-block reveal">
             <h2>캐릭터</h2>
             <div class="chips compact" data-group="character"></div>
+            <label class="character-detail" hidden>
+              <span>원하는 캐릭터 설명</span>
+              <textarea id="characterDescription" maxlength="160" placeholder="예: 흰색 토끼, 긴 귀, 웃는 표정, 오른쪽 아래에 작게"></textarea>
+              <small><b id="characterDescriptionCount">0</b>/160</small>
+            </label>
+            <div class="character-reference" id="characterReferencePanel" hidden>
+              <label>
+                <span>캐릭터 참고 이미지</span>
+                <input id="characterReferenceInput" type="file" accept="image/jpeg,image/png,image/webp" />
+              </label>
+              <div class="character-reference-preview" id="characterReferencePreview" hidden>
+                <img id="characterReferenceImage" src="./assets/cake-hero.jpg" alt="캐릭터 참고 이미지" />
+                <button id="clearCharacterReference" type="button">삭제</button>
+              </div>
+              <small id="characterReferenceStatus">참고 이미지는 AI 수정 단계에서만 사용됩니다.</small>
+            </div>
           </section>
           <section class="option-block reveal">
             <h2>판 레터링</h2>
@@ -164,22 +202,56 @@
         <div class="title-row reveal preview-title-row">
           <div>
             <span class="progress-line"></span>
-            <h1>CAKEY가 딱 맞는 디자인을<br />찾았어요!</h1>
-            <p>선택하신 옵션을 바탕으로 생성된 하나뿐인<br />디자인입니다.</p>
+            <h1>CAKEY가 비슷한 케이크를<br />찾았어요!</h1>
+            <p>선택하신 옵션과 가장 가까운 실제 제작 사례를<br />추천해드려요.</p>
           </div>
           <span>STEP 02/04</span>
         </div>
         <div class="preview-card reveal">
-          <img src="./assets/cake-hero.jpg" alt="AI 케이크 프리뷰" />
+          <img id="previewImage" src="./assets/cake-hero.jpg" alt="추천 케이크 프리뷰" />
           <button class="round like" aria-label="좋아요">♥</button>
           <button class="round share" aria-label="공유">↗</button>
-          <button class="regen">↻ REGENERATE</button>
+          <button class="regen" id="refreshRecommendations" type="button">↻ REFRESH</button>
         </div>
+        <section class="recommendations reveal">
+          <h2>추천 결과</h2>
+          <p id="recommendationStatus">선택 옵션을 분석하고 있어요.</p>
+          <div id="recommendationList" class="recommendation-list"></div>
+        </section>
         <section class="design-points reveal">
           <h2>디자인 포인트</h2>
-          <p><span>◎</span> 부드러운 파스텔 핑크 베이스</p>
-          <p><span>♛</span> 귀여운 곰돌이 캐릭터</p>
-          <p><span>彩</span> 플레이풀 레터링</p>
+          <p id="matchedTagLine"><span>◎</span> 선택 옵션과 매칭된 태그를 확인해보세요.</p>
+          <p id="scoreLine"><span>♛</span> 추천 점수가 높은 순서로 보여드립니다.</p>
+          <p id="allTagLine"><span>彩</span> 전체 태그가 여기에 표시됩니다.</p>
+        </section>
+        <section class="ai-customize reveal">
+          <h2>내 옵션에 맞게 AI 수정</h2>
+          <p id="customizeStatus">추천 결과를 선택하면 변경 요청사항을 확인할 수 있어요.</p>
+          <ol class="customize-progress" id="customizeProgress">
+            <li data-step="analyze">추천 이미지 분석</li>
+            <li data-step="diff">선택 옵션 차이 계산</li>
+            <li data-step="edit">AI 이미지 수정</li>
+            <li data-step="ready">신청 이미지 준비</li>
+          </ol>
+          <div id="customizeDiff" class="customize-diff"></div>
+          <label class="extra-request">
+            <span>마지막 추가 변경사항</span>
+            <textarea id="extraCustomizeRequest" maxlength="180" placeholder="예: 토끼 캐릭터는 오른쪽 아래에 작게, 전체 색감은 연한 하늘색으로 해주세요."></textarea>
+            <small><b id="extraRequestCount">0</b>/180</small>
+          </label>
+          <div id="customizePrompt" class="customize-prompt"></div>
+          <button class="primary pink" id="previewCustomize" type="button">변경 요청사항 보기</button>
+          <button class="primary cream" id="generateCustomize" type="button">AI 수정 1회 실행</button>
+          <div id="customizeCompare" class="customize-compare" hidden>
+            <figure>
+              <img id="customizeBaseImage" src="./assets/cake-hero.jpg" alt="기존 추천 이미지" />
+              <figcaption>기존 추천</figcaption>
+            </figure>
+            <figure>
+              <img id="customizeGeneratedImage" src="./assets/cake-hero.jpg" alt="AI 수정 결과" />
+              <figcaption>AI 수정 결과</figcaption>
+            </figure>
+          </div>
         </section>
         <blockquote class="speech reveal">"당신의 선택이 특별한 기념일을 더욱 빛내줄 거예요."</blockquote>
         <button class="primary cream reveal" data-next="shop">이 디자인으로 확정하기</button>
@@ -201,17 +273,31 @@
         </div>
         <section class="shop-gallery reveal" aria-label="온유어데이 대표 케이크 사진">
           <figure class="shop-main-photo">
-            <img src="./assets/onyourday-cakes-1.png" alt="온유어데이 하트 도시락 케이크 모음" />
+            <img id="shopMainImage" src="./assets/onyourday-cakes-1.png" alt="온유어데이 하트 도시락 케이크 모음" />
           </figure>
           <div class="shop-side-photos">
-            <img src="./assets/onyourday-cakes-2.png" alt="온유어데이 플라워 케이크" />
-            <img src="./assets/onyourday-cakes-3.png" alt="온유어데이 기념일 케이크 모음" />
-            <img src="./assets/onyourday-cakes-4.png" alt="온유어데이 핑크 하트 케이크" />
+            <img id="shopOriginalImage" src="./assets/onyourday-cakes-2.png" alt="온유어데이 플라워 케이크" />
+            <img id="shopSideImageA" src="./assets/onyourday-cakes-3.png" alt="온유어데이 기념일 케이크 모음" />
+            <img id="shopSideImageB" src="./assets/onyourday-cakes-4.png" alt="온유어데이 핑크 하트 케이크" />
           </div>
         </section>
         <section class="shop-info reveal">
-          <h2>온유어데이</h2>
-          <p>✨Since 2020<br />🎂군자동 369-16 어린이대공원역</p>
+          <h2 id="shopInfoTitle">온유어데이</h2>
+          <p id="shopInfoText">✨Since 2020&#10;🎂군자동 369-16 어린이대공원역</p>
+        </section>
+        <section class="application-preview reveal" id="shopApplicationPreview" hidden>
+          <h2>가게에 함께 전달될 이미지</h2>
+          <p>가게는 실제 제작 참고 이미지와 AI 수정 이미지를 함께 확인합니다.</p>
+          <div class="application-compare">
+            <figure>
+              <img id="shopReferenceImage" src="./assets/cake-hero.jpg" alt="기존 추천 참고 이미지" />
+              <figcaption>제작 참고</figcaption>
+            </figure>
+            <figure>
+              <img id="shopAiImage" src="./assets/cake-hero.jpg" alt="AI 수정 요청 이미지" />
+              <figcaption>사용자 의도 반영</figcaption>
+            </figure>
+          </div>
         </section>
         <button class="primary cream reveal" data-next="confirm">이 가게로 주문하기</button>
       </section>
@@ -231,13 +317,27 @@
           <span>STEP 04/04</span>
         </div>
         <article class="summary-card reveal">
-          <img src="./assets/cake-hero.jpg" alt="확정된 케이크 디자인" />
+          <img id="summaryImage" src="./assets/cake-hero.jpg" alt="확정된 케이크 디자인" />
           <div class="glass-price">
             <span>ESTIMATED PRICE</span>
             <strong id="summaryPrice">₩0</strong>
           </div>
           <dl id="summaryList"></dl>
         </article>
+        <section class="application-preview reveal" id="confirmApplicationPreview" hidden>
+          <h2>신청 이미지 구성</h2>
+          <p>주문 신청에는 선택한 가게, 추천 참고 이미지, AI 수정 이미지가 함께 포함됩니다.</p>
+          <div class="application-compare">
+            <figure>
+              <img id="confirmReferenceImage" src="./assets/cake-hero.jpg" alt="신청 참고 이미지" />
+              <figcaption>추천 참고</figcaption>
+            </figure>
+            <figure>
+              <img id="confirmAiImage" src="./assets/cake-hero.jpg" alt="신청 AI 수정 이미지" />
+              <figcaption>AI 수정</figcaption>
+            </figure>
+          </div>
+        </section>
         <p class="notice reveal">예상 가격은 선택 옵션 기준이며, 실제 제작 상담 과정에서 요청 사항에 따라 조정될 수 있습니다.</p>
         <button class="primary cream reveal" data-next="order">다음으로 넘어가기</button>
       </section>
@@ -269,6 +369,20 @@
             <span>알레르기 정보나 요청사항을 적어주세요.</span>
             <textarea placeholder="원하는 색감, 문구 위치, 픽업 메모 등을 입력하세요."></textarea>
           </label>
+          <section class="application-preview" id="orderApplicationPreview" hidden>
+            <h2>가게 전달용 신청 내용</h2>
+            <p id="orderApplicationText">추천 이미지와 AI 수정 이미지가 함께 전달됩니다.</p>
+            <div class="application-compare">
+              <figure>
+                <img id="orderReferenceImage" src="./assets/cake-hero.jpg" alt="주문 참고 이미지" />
+                <figcaption>추천 참고</figcaption>
+              </figure>
+              <figure>
+                <img id="orderAiImage" src="./assets/cake-hero.jpg" alt="주문 AI 수정 이미지" />
+                <figcaption>AI 수정</figcaption>
+              </figure>
+            </div>
+          </section>
           <p class="reservation-note">주문 내역은 매장 확인 후 확정됩니다. 확인 대기 시간은 평균 30분 이내입니다.</p>
           <button type="button" class="primary cream" data-next="survey">주문 완료하기</button>
         </form>
@@ -331,7 +445,7 @@
       </nav>
     </main>
 
-    <script src="./survey-config.js?v=20260529-survey-target"></script>
-    <script src="./app.js?v=20260529-survey-target"></script>
+    <script src="./survey-config.js?v=20260530-new-survey-endpoint"></script>
+    <script src="./app.js?v=20260530-survey-get-submit"></script>
   </body>
 </html>
