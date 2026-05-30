@@ -84,6 +84,12 @@ function doGet(event) {
       if (payload.mode === "order_archive") {
         return saveOrderArchive(payload);
       }
+      if (payload.mode === "list_orders") {
+        return listOrderArchives();
+      }
+      if (payload.mode === "get_order") {
+        return getOrderArchive(payload.orderId || payload.order_id || "");
+      }
       return savePayload(payload);
     }
 
@@ -103,6 +109,100 @@ function doGet(event) {
       message: error.message,
     });
   }
+}
+
+function listOrderArchives() {
+  try {
+    const orders = readOrderArchiveRows();
+    return jsonResponse({
+      ok: true,
+      count: orders.length,
+      orders,
+    });
+  } catch (error) {
+    return jsonResponse({
+      ok: false,
+      message: error.message,
+    });
+  }
+}
+
+function getOrderArchive(orderId) {
+  try {
+    const order = readOrderArchiveRows().find((row) => row.order_id === orderId);
+    if (!order) {
+      return jsonResponse({
+        ok: false,
+        message: "order not found",
+      });
+    }
+    return jsonResponse({
+      ok: true,
+      order,
+    });
+  } catch (error) {
+    return jsonResponse({
+      ok: false,
+      message: error.message,
+    });
+  }
+}
+
+function readOrderArchiveRows() {
+  const sheet = getOrderSheet();
+  const values = sheet.getDataRange().getValues();
+  if (values.length < 2) return [];
+
+  const headers = values[0];
+  return values.slice(1)
+    .map((row) => normalizeOrderArchiveRow(headers, row))
+    .filter((row) => row.order_id);
+}
+
+function normalizeOrderArchiveRow(headers, row) {
+  const raw = {};
+  headers.forEach((header, index) => {
+    raw[header] = row[index] === undefined || row[index] === null ? "" : String(row[index]);
+  });
+
+  return {
+    saved_at: raw["저장일시(KST)"] || "",
+    order_id: raw["주문번호"] || "",
+    page_url: raw["페이지"] || "",
+    size: raw["사이즈"] || "",
+    shape: raw["모양"] || "",
+    flavor: raw["맛"] || "",
+    style: raw["스타일"] || "",
+    mood: raw["무드"] || "",
+    border: raw["테두리"] || "",
+    lettering_type: raw["레터링 타입"] || "",
+    topping: raw["토핑"] || "",
+    color: raw["색상"] || "",
+    cream: raw["크림 데코"] || "",
+    character: raw["캐릭터"] || "",
+    plate: raw["판 레터링"] || "",
+    price: raw["가격"] || "",
+    pickup_date: raw["픽업 날짜"] || "",
+    pickup_time: raw["픽업 시간"] || "",
+    customer_name: raw["주문자명"] || "",
+    customer_phone: raw["연락처"] || "",
+    order_memo: raw["주문 메모"] || "",
+    lettering_text: raw["문구"] || "",
+    extra_request: raw["추가 변경 요청"] || "",
+    character_description: raw["캐릭터 설명"] || "",
+    recommended_cake_crop_id: raw["추천 crop ID"] || "",
+    recommended_shop_name: raw["추천 가게명"] || "",
+    recommended_crop_image_url: raw["추천 이미지 원본 URL"] || "",
+    generated_customize_image_url: raw["AI 생성 이미지 원본 URL"] || "",
+    archive_recommended_view_url: raw["Drive 추천 이미지"] || "",
+    archive_generated_view_url: raw["Drive AI 생성 이미지"] || "",
+    user_agent: raw["브라우저"] || "",
+    recommended_original_image_url: "",
+    drive_recommended_error: "",
+    drive_generated_error: "",
+    archive_error: "",
+    character_reference_image_url: "",
+  };
 }
 
 function savePayload(payload) {
