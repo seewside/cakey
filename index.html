@@ -33,7 +33,7 @@
       gtag('js', new Date());
       gtag('config', 'G-RJ90P56VRB');
     </script>
-    <link rel="stylesheet" href="./styles.css?v=20260531-simple-brush-drop-handle" />
+    <link rel="stylesheet" href="./styles.css?v=20260531-survey-logo-badge" />
   </head>
   <body>
     <main class="app-shell" aria-live="polite">
@@ -475,12 +475,15 @@
       </section>
 
       <section class="screen survey-screen" data-screen="survey">
-        <header class="topbar survey-topbar">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
           <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
-          <button class="icon-button close-icon" data-next="home" aria-label="닫기"></button>
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
         <div class="survey-head reveal">
-          <div class="cake-mark">♡</div>
+          <div class="cake-mark" aria-hidden="true">
+            <img src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="" />
+          </div>
           <h1>서비스는 어떠셨나요?</h1>
           <p>소중한 의견을 기다리고 있어요.</p>
           <div class="order-number-card" id="surveyOrderNumberCard" hidden>

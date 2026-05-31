@@ -1409,25 +1409,6 @@ label input {
   background: linear-gradient(180deg, #fff 0 166px, #fff4f7 166px 100%);
 }
 
-.survey-topbar {
-  grid-template-columns: auto 1fr auto;
-  height: 44px;
-  margin-bottom: 60px;
-}
-
-.survey-topbar .logo {
-  justify-self: start;
-  width: 82px;
-  height: 30px;
-}
-
-.survey-topbar .close-icon {
-  justify-self: end;
-  width: 34px;
-  height: 34px;
-  color: var(--deep);
-}
-
 .pending-content {
   min-height: calc(100vh - 96px);
   display: flex;
@@ -1483,23 +1464,19 @@ label input {
 .cake-mark {
   display: grid;
   place-items: center;
-  width: 58px;
-  height: 58px;
-  margin: 0 auto 22px;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 26px;
   border-radius: 50%;
   background: #ffeaf3;
-  color: var(--deep);
-  font-size: 0;
-  font-weight: 900;
+  box-shadow: 0 26px 52px rgba(127, 78, 105, 0.08);
 }
 
-.cake-mark::before {
-  content: "";
-  width: 13px;
-  height: 7px;
-  border-radius: 2px 2px 1px 1px;
-  background: var(--deep);
-  transform: skewX(-10deg);
+.cake-mark img {
+  display: block;
+  width: 82px;
+  max-height: 50px;
+  object-fit: contain;
 }
 
 .survey-head h1 {
