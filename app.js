@@ -118,8 +118,8 @@ const optionData = {
     ["바닐라쉬폰", 0],
   ],
   style: [
-    ["러블리", 0, "♡"],
-    ["심플", 0, "○"],
+    ["러블리", 0, "✦"],
+    ["심플", 0, "⌁"],
   ],
   mood: [
     ["캐릭터", 0],
@@ -162,12 +162,17 @@ const optionData = {
   ],
 };
 
+const styleSelectionGroups = ["style", "mood"];
+const minStyleSelections = 1;
+const maxStyleSelections = 3;
+
 const state = {
   size: "도시락",
   shape: "원형",
   flavor: "초코오레오",
   style: "러블리",
   mood: "캐릭터",
+  selectedStyles: ["러블리", "캐릭터"],
   border: "없음",
   letteringType: "없음",
   topping: "없음",
@@ -210,7 +215,16 @@ function activeScreen() {
 }
 
 function setBottomNav(name) {
-  document.querySelector(".bottom-nav").style.display = ["business-pending", "cart-pending", "survey", "thanks"].includes(name) ? "none" : "grid";
+  document.querySelector(".bottom-nav").style.display = [
+    "business-pending",
+    "gallery-pending",
+    "orders-pending",
+    "list-pending",
+    "cart-pending",
+    "profile-pending",
+    "survey",
+    "thanks",
+  ].includes(name) ? "none" : "grid";
 }
 
 function showScreen(name, push = true) {
@@ -268,7 +282,54 @@ function normalizeLunchboxRules() {
   state.flavor = "초코오레오";
 }
 
+function optionLabels(group) {
+  return optionData[group]?.map(([label]) => label) || [];
+}
+
+function isStyleSelectionGroup(group) {
+  return styleSelectionGroups.includes(group);
+}
+
+function selectedStyleLabels() {
+  return Array.isArray(state.selectedStyles) && state.selectedStyles.length
+    ? state.selectedStyles
+    : [state.style, state.mood].filter(Boolean);
+}
+
+function syncStyleState() {
+  const selected = selectedStyleLabels().slice(0, maxStyleSelections);
+  const styleLabels = optionLabels("style");
+  const moodLabels = optionLabels("mood");
+  const selectedStyles = selected.filter((label) => styleLabels.includes(label));
+  const selectedMoods = selected.filter((label) => moodLabels.includes(label));
+
+  state.selectedStyles = selected;
+  state.style = selectedStyles.join(", ") || selected[0] || "";
+  state.mood = selectedMoods.join(", ") || selected.filter((label) => !selectedStyles.includes(label)).join(", ");
+}
+
+function selectStyleOption(label) {
+  const selected = selectedStyleLabels();
+  const isSelected = selected.includes(label);
+
+  if (isSelected) {
+    if (selected.length <= minStyleSelections) return;
+    state.selectedStyles = selected.filter((item) => item !== label);
+  } else {
+    if (selected.length >= maxStyleSelections) return;
+    state.selectedStyles = [...selected, label];
+  }
+
+  syncStyleState();
+  renderOptions();
+  updateSummary();
+}
+
 function selectOption(group, label) {
+  if (isStyleSelectionGroup(group)) {
+    selectStyleOption(label);
+    return;
+  }
   state[group] = label;
   if (group === "character" && label === "없음") clearCharacterReference();
   normalizeLunchboxRules();
@@ -280,33 +341,53 @@ function createChip(group, [label, price, icon]) {
   const button = document.createElement("button");
   button.type = "button";
   button.className = "chip";
-  if (state[group] === label) button.classList.add("active");
-  if (isDisabled(group, label)) {
+  const isStyleGroup = isStyleSelectionGroup(group);
+  const selectedStyles = selectedStyleLabels();
+  const isSelected = isStyleGroup ? selectedStyles.includes(label) : state[group] === label;
+  if (isSelected) button.classList.add("active");
+  if (isStyleGroup && isSelected && selectedStyles.length <= minStyleSelections) {
+    button.classList.add("locked");
+  }
+  if (isDisabled(group, label) || (isStyleGroup && !isSelected && selectedStyles.length >= maxStyleSelections)) {
     button.classList.add("disabled");
     button.disabled = true;
   }
-  button.innerHTML = `${icon ? `<b>${icon}</b><br>` : ""}${label}<small>${formatDelta(price)}</small>`;
+  button.setAttribute("aria-pressed", isSelected ? "true" : "false");
+  button.innerHTML = isStyleGroup
+    ? label
+    : `${icon ? `<b>${icon}</b><br>` : ""}${label}<small>${formatDelta(price)}</small>`;
   button.addEventListener("click", () => selectOption(group, label));
   return button;
 }
 
+function getStyleIcon(label) {
+  if (label === "러블리") {
+    return `
+      <svg class="style-icon lovely-icon" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <path d="M24.2 9.3c.6-1.9 3.3-1.9 3.9 0l4.4 13.9 13.9 4.4c1.9.6 1.9 3.3 0 3.9l-13.9 4.4-4.4 13.9c-.6 1.9-3.3 1.9-3.9 0l-4.4-13.9-13.9-4.4c-1.9-.6-1.9-3.3 0-3.9l13.9-4.4 4.4-13.9zm2 6.9l-2.8 8.7c-.2.7-.8 1.3-1.5 1.5l-8.7 2.8 8.7 2.8c.7.2 1.3.8 1.5 1.5l2.8 8.7 2.8-8.7c.2-.7.8-1.3 1.5-1.5l8.7-2.8-8.7-2.8c-.7-.2-1.3-.8-1.5-1.5l-2.8-8.7z" />
+        <path d="M47 4.4c.5-1.6 2.8-1.6 3.3 0l2.1 6.6 6.6 2.1c1.6.5 1.6 2.8 0 3.3l-6.6 2.1-2.1 6.6c-.5 1.6-2.8 1.6-3.3 0l-2.1-6.6-6.6-2.1c-1.6-.5-1.6-2.8 0-3.3l6.6-2.1L47 4.4zm1.6 6l-.8 2.5c-.2.6-.6 1-1.2 1.2l-2.5.8 2.5.8c.6.2 1 .6 1.2 1.2l.8 2.5.8-2.5c.2-.6.6-1 1.2-1.2l2.5-.8-2.5-.8c-.6-.2-1-.6-1.2-1.2l-.8-2.5z" />
+        <path d="M45.7 37.5c.5-1.6 2.8-1.6 3.3 0l1.8 5.7 5.7 1.8c1.6.5 1.6 2.8 0 3.3l-5.7 1.8-1.8 5.7c-.5 1.6-2.8 1.6-3.3 0l-1.8-5.7-5.7-1.8c-1.6-.5-1.6-2.8 0-3.3l5.7-1.8 1.8-5.7zm1.6 5.8l-.5 1.6c-.2.6-.6 1-1.2 1.2l-1.6.5 1.6.5c.6.2 1 .6 1.2 1.2l.5 1.6.5-1.6c.2-.6.6-1 1.2-1.2l1.6-.5-1.6-.5c-.6-.2-1-.6-1.2-1.2l-.5-1.6z" />
+      </svg>
+    `;
+  }
+
+  return `
+    <svg class="style-icon simple-icon" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <path class="simple-stem" d="M36.7 8.2h11.1v34.6H36.7z" transform="rotate(45 42.25 25.5)" />
+      <path class="simple-bristle" fill-rule="evenodd" clip-rule="evenodd" d="M12.5 53.2c6.1-.9 6-7.3 9.8-11.1 4.3-4.3 10.5-4.4 14.3-.6 3.8 3.8 3.7 10-.6 14.3-3.8 3.8-10.2 3.7-11.1 9.8-2.1-5.2-7.2-10.3-12.4-12.4zm13-8.2c-1.8 1.8-1.9 4.8-.2 6.5 1.7 1.7 4.7 1.6 6.5-.2 1.8-1.8 1.9-4.8.2-6.5-1.7-1.7-4.7-1.6-6.5.2z" />
+    </svg>
+  `;
+}
+
 function renderOptions() {
+  syncStyleState();
   document.querySelector(".app-shell").classList.toggle("color-picker-open", colorPickerOpen);
   Object.entries(optionData).forEach(([group, items]) => {
     const root = document.querySelector(`[data-group="${group}"]`);
     if (!root) return;
     root.innerHTML = "";
     items.forEach((item) => {
-      if (group === "style") {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = `style-card${state.style === item[0] ? " active" : ""}`;
-        button.innerHTML = `<b>${item[2]}</b><span>${item[0]}</span>`;
-        button.addEventListener("click", () => selectOption("style", item[0]));
-        root.append(button);
-      } else {
-        root.append(createChip(group, item));
-      }
+      root.append(createChip(group, item));
     });
   });
 
@@ -399,7 +480,7 @@ function updateSummary() {
     <dt>SIZE · SHAPE · FLAVOR</dt>
     <dd>${state.size} · ${state.shape} · ${state.flavor}</dd>
     <dt>MOOD & PALETTE</dt>
-    <dd>${state.style} · ${state.mood}</dd>
+    <dd>${selectedStyleLabels().join(" · ")}</dd>
     <dt>DECORATIONS</dt>
     <dd>${[state.border, state.topping, state.cream, state.character === "있음" ? "캐릭터" : "", state.plate === "있음" ? "판 레터링" : ""].filter(Boolean).join(" · ")}</dd>
     ${recommendationLine}
@@ -475,8 +556,9 @@ function buildRecommendTags() {
 
   addTag(tags, "shape", shape, ["원형", "하트", "사각"]);
   addTag(tags, "dominant_color", colorToTag(state.color));
-  addTag(tags, "visual_style", state.style, ["심플", "러블리", "캐릭터", "레터링중심", "화려함"]);
-  addTag(tags, "visual_style", state.mood, ["심플", "러블리", "캐릭터", "레터링중심", "화려함"]);
+  selectedStyleLabels().forEach((label) => {
+    addTag(tags, "visual_style", label, [...optionLabels("style"), ...optionLabels("mood")]);
+  });
   addTag(tags, "border_type", state.border);
   addTag(tags, "lettering_type", state.letteringType, ["없음", "중앙레터링", "꽉찬레터링", "2겹레터링", "무지개레터링"]);
   addTag(tags, "cream_decoration", state.cream);
@@ -932,6 +1014,7 @@ function collectSurveyPayload() {
       flavor: state.flavor,
       style: state.style,
       mood: state.mood,
+      visualStyles: selectedStyleLabels(),
       border: state.border,
       letteringType: state.letteringType,
       topping: state.topping,
@@ -958,6 +1041,7 @@ function collectOrderPayload() {
       flavor: state.flavor,
       style: state.style,
       mood: state.mood,
+      visualStyles: selectedStyleLabels(),
       border: state.border,
       letteringType: state.letteringType,
       topping: state.topping,

@@ -23,9 +23,9 @@
     <meta name="twitter:title" content="CAKEY | 커스텀 케이크 주문의 새로운 치트키" />
     <meta name="twitter:description" content="취향 옵션 기반 케이크 추천과 AI 수정 이미지를 한 번에 확인하세요." />
     <meta name="twitter:image" content="https://seewside.github.io/cakey/assets/cakey-link-preview.png?v=20260531" />
-    <link rel="icon" type="image/png" href="./assets/favicon.png?v=20260531" />
-    <link rel="shortcut icon" href="./assets/favicon.ico?v=20260531" />
-    <link rel="apple-touch-icon" href="./assets/favicon.png?v=20260531" />
+    <link rel="icon" type="image/png" href="./assets/favicon.png?v=20260531-new-logo" />
+    <link rel="shortcut icon" href="./assets/favicon.ico?v=20260531-new-logo" />
+    <link rel="apple-touch-icon" href="./assets/favicon.png?v=20260531-new-logo" />
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJ90P56VRB"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -33,21 +33,23 @@
       gtag('js', new Date());
       gtag('config', 'G-RJ90P56VRB');
     </script>
-    <link rel="stylesheet" href="./styles.css?v=20260531-order-lookup" />
+    <link rel="stylesheet" href="./styles.css?v=20260531-simple-brush-drop-handle" />
   </head>
   <body>
     <main class="app-shell" aria-live="polite">
       <section class="screen active" data-screen="home">
         <header class="topbar">
-          <button class="icon-button menu-icon" aria-label="메뉴">
+          <button class="icon-button menu-icon" data-next="list-pending" aria-label="메뉴">
             <span></span><span></span><span></span>
           </button>
-          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
           <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
 
         <div class="home-hero reveal">
-          <img class="floating-cake" src="./assets/cake-hero.jpg" alt="파스텔 커스텀 케이크" />
+          <div class="floating-cake-frame">
+            <img class="floating-cake" src="./assets/cake-hero.jpg" alt="파스텔 커스텀 케이크" />
+          </div>
           <span class="pill">PREMIUM CUSTOM SERVICE</span>
           <h1>커스텀 케이크 주문의<br />새로운 치트키,<br /><strong>CAKEY</strong></h1>
           <p>원하는 디자인을 고르면 가까운 케이크 가게와 바로 연결해 드려요.</p>
@@ -83,13 +85,13 @@
       <section class="screen pending-screen" data-screen="business-pending">
         <header class="topbar">
           <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
-          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
           <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
 
         <div class="pending-content reveal">
           <div class="pending-mark" aria-hidden="true">
-            <img src="./assets/cakey-logo-transparent.png" alt="" />
+            <img src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="" />
           </div>
           <h1>아직 준비 중인 서비스입니다.</h1>
           <p>사업자 체험 기능은 더 좋은 모습으로 곧 찾아올게요.</p>
@@ -97,16 +99,67 @@
         </div>
       </section>
 
-      <section class="screen pending-screen" data-screen="cart-pending">
+      <section class="screen pending-screen" data-screen="gallery-pending">
         <header class="topbar">
           <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
-          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
           <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
 
         <div class="pending-content reveal">
           <div class="pending-mark" aria-hidden="true">
-            <img src="./assets/cakey-logo-transparent.png" alt="" />
+            <img src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="" />
+          </div>
+          <h1>아직 준비 중인 서비스입니다.</h1>
+          <p>갤러리 기능은 더 좋은 모습으로 곧 찾아올게요.</p>
+          <button type="button" class="primary pink" data-next="home">홈으로 가기</button>
+        </div>
+      </section>
+
+      <section class="screen pending-screen" data-screen="orders-pending">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
+        </header>
+
+        <div class="pending-content reveal">
+          <div class="pending-mark" aria-hidden="true">
+            <img src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="" />
+          </div>
+          <h1>아직 준비 중인 서비스입니다.</h1>
+          <p>주문 내역 기능은 더 좋은 모습으로 곧 찾아올게요.</p>
+          <button type="button" class="primary pink" data-next="home">홈으로 가기</button>
+        </div>
+      </section>
+
+      <section class="screen pending-screen" data-screen="list-pending">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
+        </header>
+
+        <div class="pending-content reveal">
+          <div class="pending-mark" aria-hidden="true">
+            <img src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="" />
+          </div>
+          <h1>아직 준비 중인 서비스입니다.</h1>
+          <p>목록 기능은 더 좋은 모습으로 곧 찾아올게요.</p>
+          <button type="button" class="primary pink" data-next="home">홈으로 가기</button>
+        </div>
+      </section>
+
+      <section class="screen pending-screen" data-screen="cart-pending">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
+        </header>
+
+        <div class="pending-content reveal">
+          <div class="pending-mark" aria-hidden="true">
+            <img src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="" />
           </div>
           <h1>아직 준비 중인 서비스입니다.</h1>
           <p>장바구니 기능은 더 좋은 모습으로 곧 찾아올게요.</p>
@@ -114,10 +167,27 @@
         </div>
       </section>
 
+      <section class="screen pending-screen" data-screen="profile-pending">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
+        </header>
+
+        <div class="pending-content reveal">
+          <div class="pending-mark" aria-hidden="true">
+            <img src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="" />
+          </div>
+          <h1>아직 준비 중인 서비스입니다.</h1>
+          <p>프로필 기능은 더 좋은 모습으로 곧 찾아올게요.</p>
+          <button type="button" class="primary pink" data-next="home">홈으로 가기</button>
+        </div>
+      </section>
+
       <section class="screen" data-screen="options">
         <header class="topbar">
           <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
-          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
           <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
 
@@ -142,7 +212,7 @@
           </section>
           <section class="option-block reveal">
             <h2>전체 스타일</h2>
-            <div class="style-cards" data-group="style"></div>
+            <div class="chips small style-chips" data-group="style"></div>
             <div class="chips small" data-group="mood"></div>
           </section>
           <section class="option-block reveal">
@@ -211,7 +281,7 @@
       <section class="screen" data-screen="preview">
         <header class="topbar">
           <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
-          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
           <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
         <div class="title-row reveal preview-title-row">
@@ -275,7 +345,7 @@
       <section class="screen" data-screen="shop">
         <header class="topbar">
           <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
-          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
           <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
         <div class="title-row reveal shop-title-row">
@@ -320,7 +390,7 @@
       <section class="screen" data-screen="confirm">
         <header class="topbar">
           <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
-          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
           <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
         <div class="title-row reveal confirm-title-row">
@@ -360,7 +430,7 @@
       <section class="screen" data-screen="order">
         <header class="topbar">
           <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
-          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
           <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
         <div class="title-row reveal">
@@ -405,10 +475,9 @@
       </section>
 
       <section class="screen survey-screen" data-screen="survey">
-        <header class="topbar">
-          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
-          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
-          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
+        <header class="topbar survey-topbar">
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
+          <button class="icon-button close-icon" data-next="home" aria-label="닫기"></button>
         </header>
         <div class="survey-head reveal">
           <div class="cake-mark">♡</div>
@@ -434,7 +503,7 @@
       <section class="screen thanks-screen" data-screen="thanks">
         <header class="topbar">
           <button class="icon-button back-icon" data-next="home" aria-label="홈으로 돌아가기"></button>
-          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
           <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
         <div class="thanks-content reveal">
@@ -465,7 +534,7 @@
       <section class="screen" data-screen="order-lookup">
         <header class="topbar">
           <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
-          <img class="logo" src="./assets/cakey-logo-transparent.png" alt="CAKEY" />
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
           <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
         </header>
         <div class="title-row reveal">
@@ -478,14 +547,14 @@
       </section>
 
       <nav class="bottom-nav" aria-label="하단 메뉴">
-        <a class="active"><span>⌘</span>Gallery</a>
-        <a><span>▣</span>Orders</a>
-        <a><span>♣</span>Cart</a>
-        <a><span>♙</span>Profile</a>
+        <button type="button" class="active" data-next="gallery-pending"><span>⌘</span>Gallery</button>
+        <button type="button" data-next="orders-pending"><span>▣</span>Orders</button>
+        <button type="button" data-next="cart-pending"><span class="nav-bag-icon" aria-hidden="true"></span>Cart</button>
+        <button type="button" data-next="profile-pending"><span>♙</span>Profile</button>
       </nav>
     </main>
 
     <script src="./survey-config.js?v=20260530-new-survey-endpoint"></script>
-    <script src="./app.js?v=20260531-order-lookup"></script>
+    <script src="./app.js?v=20260531-simple-brush-drop-handle"></script>
   </body>
 </html>
