@@ -184,6 +184,12 @@ textarea {
   animation: floatCake 3.2s ease-in-out infinite;
 }
 
+.floating-cake-frame picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .floating-cake {
   display: block;
   width: 100%;
