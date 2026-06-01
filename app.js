@@ -299,18 +299,29 @@ function syncStyleState() {
   const moodLabels = optionLabels("mood");
   const selectedStyles = selected.filter((label) => styleLabels.includes(label));
   const selectedMoods = selected.filter((label) => moodLabels.includes(label));
+  const primaryStyle = selectedStyles[0] || styleLabels[0] || "";
 
-  state.selectedStyles = selected;
-  state.style = selectedStyles.join(", ") || selected[0] || "";
-  state.mood = selectedMoods.join(", ") || selected.filter((label) => !selectedStyles.includes(label)).join(", ");
+  state.selectedStyles = [primaryStyle, ...selectedMoods].filter(Boolean).slice(0, maxStyleSelections);
+  state.style = primaryStyle;
+  state.mood = selectedMoods.join(", ");
 }
 
-function selectStyleOption(label) {
+function selectStyleOption(group, label) {
   const selected = selectedStyleLabels();
+  const moodLabels = optionLabels("mood");
+
+  if (group === "style") {
+    const selectedMoods = selected.filter((item) => moodLabels.includes(item));
+    state.selectedStyles = [label, ...selectedMoods].slice(0, maxStyleSelections);
+    syncStyleState();
+    renderOptions();
+    updateSummary();
+    return;
+  }
+
   const isSelected = selected.includes(label);
 
   if (isSelected) {
-    if (selected.length <= minStyleSelections) return;
     state.selectedStyles = selected.filter((item) => item !== label);
   } else {
     if (selected.length >= maxStyleSelections) return;
@@ -324,7 +335,7 @@ function selectStyleOption(label) {
 
 function selectOption(group, label) {
   if (isStyleSelectionGroup(group)) {
-    selectStyleOption(label);
+    selectStyleOption(group, label);
     return;
   }
   state[group] = label;
@@ -345,7 +356,7 @@ function createChip(group, [label, price, icon]) {
   if (isStyleGroup && isSelected && selectedStyles.length <= minStyleSelections) {
     button.classList.add("locked");
   }
-  if (isDisabled(group, label) || (isStyleGroup && !isSelected && selectedStyles.length >= maxStyleSelections)) {
+  if (isDisabled(group, label) || (group === "mood" && !isSelected && selectedStyles.length >= maxStyleSelections)) {
     button.classList.add("disabled");
     button.disabled = true;
   }
