@@ -236,9 +236,10 @@ figure {
 .home-hero p {
   margin-top: 20px;
   color: var(--muted);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.7;
   font-weight: 650;
+  white-space: nowrap;
 }
 
 .home-actions {
@@ -1909,6 +1910,7 @@ label input {
   .survey-screen { padding-inline: 24px; }
   .survey-head { margin-inline: -24px; padding-inline: 24px; }
   .home-hero h1 { font-size: 30px; }
+  .home-hero p { font-size: 13px; }
   .title-row h1 { font-size: 25px; }
   .swatches { grid-template-columns: repeat(5, 42px); }
   .swatch { width: 42px; height: 42px; }
