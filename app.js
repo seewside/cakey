@@ -110,7 +110,6 @@ const optionData = {
     ["원형", 0, "○"],
     ["하트", 0, "♡"],
     ["사각형", 4000, "□"],
-    ["기타", 0, "✦"],
   ],
   flavor: [
     ["초코오레오", 0],
@@ -122,7 +121,6 @@ const optionData = {
     ["심플", 0, "⌁"],
   ],
   mood: [
-    ["캐릭터", 0],
     ["레터링중심", 0],
     ["화려함", 0],
   ],
@@ -135,7 +133,6 @@ const optionData = {
   letteringType: [
     ["없음", 0],
     ["중앙레터링", 0],
-    ["깃발레터링", 0],
     ["2겹레터링", 1000],
     ["무지개레터링", 3000],
   ],
@@ -171,8 +168,8 @@ const state = {
   shape: "원형",
   flavor: "초코오레오",
   style: "러블리",
-  mood: "캐릭터",
-  selectedStyles: ["러블리", "캐릭터"],
+  mood: "",
+  selectedStyles: ["러블리"],
   border: "없음",
   letteringType: "없음",
   topping: "없음",
