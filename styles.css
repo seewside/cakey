@@ -1608,6 +1608,8 @@ label input {
 }
 
 .lookup-result {
+  width: min(100%, 386px);
+  margin-inline: auto;
   padding: 22px;
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.86);
