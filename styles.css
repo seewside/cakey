@@ -872,7 +872,7 @@ input {
 
 .design-points,
 .summary-card,
-.order-form fieldset,
+.order-section,
 .free-text,
 .notice,
 .reservation-note,
@@ -1368,23 +1368,25 @@ input {
   max-width: 100%;
 }
 
-.order-form fieldset {
+.order-section {
   display: grid;
   gap: 18px;
   width: 100%;
   max-width: 100%;
-  min-inline-size: 0;
-  margin: 0;
   padding: 26px;
   border: 1px solid var(--line);
 }
 
-.order-form legend,
+.order-section h2,
 .requests {
   max-width: 100%;
   color: var(--deep);
   font-size: 24px;
   font-weight: 900;
+}
+
+.order-section h2 {
+  margin: 0;
 }
 
 label {

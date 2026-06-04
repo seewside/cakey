@@ -33,7 +33,7 @@
       gtag('js', new Date());
       gtag('config', 'G-RJ90P56VRB');
     </script>
-    <link rel="stylesheet" href="./styles.css?v=20260604-qa-fixes" />
+    <link rel="stylesheet" href="./styles.css?v=20260604-order-section" />
   </head>
   <body>
     <main class="app-shell" aria-live="polite">
@@ -442,16 +442,16 @@
         </div>
         <div class="progress"><span style="width:100%"></span></div>
         <form class="order-form reveal">
-          <fieldset>
-            <legend>픽업 정보</legend>
+          <section class="order-section">
+            <h2>픽업 정보</h2>
             <label>픽업 날짜<input id="pickupDate" type="date" value="2026-05-20" /></label>
             <label>픽업 시간<input id="pickupTime" type="time" value="14:30" /></label>
-          </fieldset>
-          <fieldset>
-            <legend>주문자 정보</legend>
+          </section>
+          <section class="order-section">
+            <h2>주문자 정보</h2>
             <label>성함<input id="customerName" type="text" value="김케이" /></label>
             <label>연락처<input id="customerPhone" type="tel" value="010-1234-5678" /></label>
-          </fieldset>
+          </section>
           <label class="requests">
             Special Requests
             <span>알레르기 정보나 요청사항을 적어주세요.</span>
