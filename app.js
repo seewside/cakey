@@ -213,6 +213,20 @@ const formatter = new Intl.NumberFormat("ko-KR", {
   maximumFractionDigits: 0,
 });
 
+const optionExampleImages = {
+  border: {
+    크림테두리: "./assets/border-cream-example.png",
+    쉘테두리: "./assets/border-shell-example.png",
+    꽃테두리: "./assets/border-flower-example.png",
+  },
+  cream: {
+    하트: "./assets/cream-heart-example.png",
+    꽃: "./assets/cream-flower-example.png",
+    리본: "./assets/cream-ribbon-example.png",
+    레이스: "./assets/cream-lace-example.png",
+  },
+};
+
 function activeScreen() {
   return screens.find((screen) => screen.classList.contains("active"));
 }
@@ -355,7 +369,9 @@ function selectOption(group, label) {
 function createChip(group, [label, price, icon]) {
   const button = document.createElement("button");
   button.type = "button";
-  button.className = `chip${group === "border" && label !== "없음" ? " border-example-chip" : ""}`;
+  const exampleImage = optionExampleImages[group]?.[label];
+  const hasExampleFrame = exampleImage !== undefined;
+  button.className = `chip${hasExampleFrame ? " example-chip" : ""}`;
   const isStyleGroup = isStyleSelectionGroup(group);
   const selectedStyles = selectedStyleLabels();
   const isSelected = isStyleGroup ? selectedStyles.includes(label) : state[group] === label;
@@ -370,14 +386,13 @@ function createChip(group, [label, price, icon]) {
   button.setAttribute("aria-pressed", isSelected ? "true" : "false");
   if (isStyleGroup) {
     button.textContent = label;
-  } else if (group === "border" && label !== "없음") {
-    const exampleImage = label === "크림테두리" ? "./assets/border-cream-example.png" : "";
+  } else if (hasExampleFrame) {
     button.innerHTML = `
       ${icon ? `<b>${icon}</b><br>` : ""}${label}
       <small>${formatDelta(price)}</small>
       <span class="chip-example-label">-예시 사진</span>
       <span class="chip-example-frame">
-        ${exampleImage ? `<img src="${exampleImage}" alt="${label} 예시 사진">` : ""}
+        ${exampleImage ? `<img src="${exampleImage}" alt="${label} 예시 사진" onerror="this.remove()">` : ""}
       </span>
     `;
   } else {

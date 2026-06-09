@@ -540,7 +540,7 @@ figure {
   font-weight: 800;
 }
 
-.border-example-chip {
+.example-chip {
   display: grid;
   justify-items: center;
   gap: 4px;
@@ -550,7 +550,7 @@ figure {
   padding: 12px 10px 10px;
 }
 
-.border-example-chip small {
+.example-chip small {
   margin-top: 0;
 }
 
