@@ -223,16 +223,17 @@
             <div class="chips compact" data-group="border"></div>
           </section>
           <section class="option-block reveal">
-            <h2>레터링 위치</h2>
-            <div class="chips compact" data-group="letteringType"></div>
-          </section>
-          <section class="option-block reveal">
             <h2>레터링</h2>
             <label class="letter-box">
               <span>Lettering</span>
               <textarea id="lettering" maxlength="20" placeholder="케이크 위에 적을 메시지를 입력하세요"></textarea>
-              <small><b id="letterCount">0</b>/20</small>
+              <small class="letter-count"><b id="letterCount">0</b>/20</small>
+              <small class="letter-hint">*입력창에 줄 바꿈이 있다면 반영해서 '//'를 적어주세요.</small>
             </label>
+            <div class="lettering-font-options">
+              <h3>글씨체 선택</h3>
+              <div class="chips compact" data-group="letteringFont"></div>
+            </div>
           </section>
           <section class="option-block reveal">
             <h2>토핑</h2>

@@ -136,6 +136,11 @@ const optionData = {
     ["2겹레터링", 1000],
     ["무지개레터링", 3000],
   ],
+  letteringFont: [
+    ["한글", 0],
+    ["영어 필기체", 0],
+    ["영어 정자체", 0],
+  ],
   topping: [
     ["없음", 0],
     ["진주", 1000],
@@ -172,6 +177,7 @@ const state = {
   selectedStyles: ["러블리"],
   border: "없음",
   letteringType: "없음",
+  letteringFont: "한글",
   topping: "없음",
   color: "#ffd4e3",
   cream: "없음",

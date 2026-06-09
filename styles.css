@@ -505,6 +505,16 @@ figure {
   font-size: 24px;
 }
 
+.lettering-font-options {
+  margin-top: 18px;
+}
+
+.lettering-font-options h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 900;
+}
+
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -694,12 +704,21 @@ input {
   padding: 0 22px;
 }
 
-.letter-box small {
+.letter-box .letter-count {
   display: block;
   margin-top: -24px;
   padding-right: 12px;
   text-align: right;
   color: var(--muted);
+}
+
+.letter-box .letter-hint {
+  display: block;
+  margin-top: 12px;
+  color: rgba(121, 90, 110, 0.58);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
 }
 
 .swatches {
@@ -1278,7 +1297,7 @@ input {
 .shop-info {
   position: relative;
   z-index: 2;
-  margin: -64px 0 38px;
+  margin: -44px 0 38px;
   padding: 18px 24px 20px;
   background: rgba(244, 241, 243, 0.86);
   backdrop-filter: blur(10px);
