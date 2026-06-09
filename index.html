@@ -49,8 +49,8 @@
         <div class="home-hero reveal">
           <div class="floating-cake-frame">
             <picture>
-              <source srcset="./assets/cake-hero-cutout.webp?v=20260604-cutout" type="image/webp" />
-              <img class="floating-cake" src="./assets/cake-hero-cutout.png?v=20260604-cutout" alt="체리 장식 핑크 2단 케이크" />
+              <source srcset="./assets/cake-hero.webp?v=20260604-roomy" type="image/webp" />
+              <img class="floating-cake" src="./assets/cake-hero.jpg?v=20260604-roomy" alt="체리 장식 핑크 2단 케이크" />
             </picture>
           </div>
           <span class="pill">PREMIUM CUSTOM SERVICE</span>
@@ -59,7 +59,7 @@
         </div>
 
         <div class="home-actions reveal">
-          <button class="primary pink" data-next="options">주문자로 체험하기</button>
+          <button class="primary pink" data-next="pickup">주문자로 체험하기</button>
           <button class="primary cream" data-next="business-pending">사업자로 체험하기</button>
           <a class="primary admin-link" href="https://cakey-backend.onrender.com/orders/admin" target="_blank" rel="noreferrer">관리자 주문 조회</a>
         </div>
@@ -187,6 +187,29 @@
         </div>
       </section>
 
+      <section class="screen" data-screen="pickup">
+        <header class="topbar">
+          <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
+          <img class="logo" src="./assets/cakey-logo-transparent.png?v=20260531-new-logo" alt="CAKEY" />
+          <button class="icon-button bag-icon" data-next="cart-pending" aria-label="장바구니"></button>
+        </header>
+
+        <div class="title-row reveal">
+          <h1>픽업 정보를 확인해주세요</h1>
+          <span>STEP 01/05</span>
+        </div>
+        <div class="progress"><span style="width:20%"></span></div>
+
+        <form class="order-form reveal">
+          <section class="order-section">
+            <h2>픽업 정보</h2>
+            <label>픽업 날짜<input id="pickupDate" type="date" value="2026-05-20" /></label>
+            <label>픽업 시간<input id="pickupTime" type="time" value="14:30" /></label>
+          </section>
+          <button type="button" class="primary cream" data-next="options">옵션 선택하러 가기</button>
+        </form>
+      </section>
+
       <section class="screen" data-screen="options">
         <header class="topbar">
           <button class="icon-button back-icon" data-back aria-label="뒤로가기"></button>
@@ -196,9 +219,9 @@
 
         <div class="title-row reveal">
           <h1>케이크 옵션 선택</h1>
-          <span>STEP 01/04</span>
+          <span>STEP 02/05</span>
         </div>
-        <div class="progress"><span style="width:25%"></span></div>
+        <div class="progress"><span style="width:40%"></span></div>
 
         <form class="options-form">
           <section class="option-block reveal">
@@ -299,7 +322,7 @@
             <h1>CAKEY가 비슷한 케이크를<br />찾았어요!</h1>
             <p>선택하신 옵션과 가장 가까운 실제 제작 사례를<br />추천해드려요.</p>
           </div>
-          <span>STEP 02/04</span>
+          <span>STEP 03/05</span>
         </div>
         <div class="preview-card reveal">
           <img id="previewImage" src="./assets/cake-hero.jpg" alt="추천 케이크 프리뷰" />
@@ -363,7 +386,7 @@
             <h1>추천 가게를 확인해보세요</h1>
             <p>cakey가 만들어온 대표 케이크를 모아봤어요.</p>
           </div>
-          <span>STEP 03/04</span>
+          <span>STEP 04/05</span>
         </div>
         <section class="shop-gallery reveal" aria-label="온유어데이 대표 케이크 사진">
           <figure class="shop-main-photo">
@@ -408,7 +431,7 @@
             <h1>주문 내용을 확인해볼까요?</h1>
             <p>선택하신 감성과 디자인이 잘 반영됐는지 체크해주세요.</p>
           </div>
-          <span>STEP 04/04</span>
+          <span>STEP 05/05</span>
         </div>
         <article class="summary-card reveal">
           <img id="summaryImage" src="./assets/cake-hero.jpg" alt="확정된 케이크 디자인" />
@@ -444,15 +467,10 @@
         </header>
         <div class="title-row reveal">
           <h1>주문 정보 입력</h1>
-          <span>STEP 05/05</span>
+          <span>주문자 정보</span>
         </div>
         <div class="progress"><span style="width:100%"></span></div>
         <form class="order-form reveal">
-          <section class="order-section">
-            <h2>픽업 정보</h2>
-            <label>픽업 날짜<input id="pickupDate" type="date" value="2026-05-20" /></label>
-            <label>픽업 시간<input id="pickupTime" type="time" value="14:30" /></label>
-          </section>
           <section class="order-section">
             <h2>주문자 정보</h2>
             <label>성함<input id="customerName" type="text" value="김케이" /></label>

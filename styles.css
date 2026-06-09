@@ -176,12 +176,11 @@ textarea {
 
 .floating-cake-frame {
   display: block;
-  width: min(100%, 386px);
+  width: 100%;
   aspect-ratio: 1;
-  margin-inline: auto;
-  overflow: visible;
-  border-radius: 0;
-  box-shadow: none;
+  overflow: hidden;
+  border-radius: 34px;
+  box-shadow: 0 26px 46px rgba(192, 130, 158, 0.18);
   animation: floatCake 3.2s ease-in-out infinite;
 }
 
@@ -195,9 +194,9 @@ textarea {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center center;
-  filter: drop-shadow(0 28px 32px rgba(127, 78, 105, 0.16));
+  transform: scale(1.12) translate(-1.5%, -4%);
 }
 
 @keyframes floatCake {
@@ -575,6 +574,11 @@ figure {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.chip-example-frame img[src$="cream-lace-example.png"] {
+  object-fit: contain;
+  background: #f3ebbe;
 }
 
 .chip.active {
