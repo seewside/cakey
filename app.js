@@ -64,7 +64,7 @@ const demoRecommendations = [
       dominant_color: ["핑크", "퍼플"],
       visual_style: ["러블리", "화려함"],
       lettering_type: ["중앙레터링"],
-      border_type: ["점선테두리"],
+      border_type: ["쉘테두리"],
       cream_decoration: ["하트"],
       topping_decoration: ["진주"],
       character_type: ["없음"],
@@ -127,7 +127,7 @@ const optionData = {
   border: [
     ["없음", 0],
     ["크림테두리", 4000],
-    ["점선테두리", 4000],
+    ["쉘테두리", 4000],
     ["꽃테두리", 4000],
   ],
   letteringType: [
@@ -138,8 +138,8 @@ const optionData = {
   ],
   letteringFont: [
     ["한글", 0],
-    ["영어 필기체", 0],
     ["영어 정자체", 0],
+    ["영어 필기체", 0],
   ],
   topping: [
     ["없음", 0],
@@ -348,13 +348,14 @@ function selectOption(group, label) {
   if (group === "character" && label === "없음") clearCharacterReference();
   normalizeLunchboxRules();
   renderOptions();
+  syncPlateLetteringField();
   updateSummary();
 }
 
 function createChip(group, [label, price, icon]) {
   const button = document.createElement("button");
   button.type = "button";
-  button.className = "chip";
+  button.className = `chip${group === "border" && label !== "없음" ? " border-example-chip" : ""}`;
   const isStyleGroup = isStyleSelectionGroup(group);
   const selectedStyles = selectedStyleLabels();
   const isSelected = isStyleGroup ? selectedStyles.includes(label) : state[group] === label;
@@ -367,9 +368,21 @@ function createChip(group, [label, price, icon]) {
     button.disabled = true;
   }
   button.setAttribute("aria-pressed", isSelected ? "true" : "false");
-  button.innerHTML = isStyleGroup
-    ? label
-    : `${icon ? `<b>${icon}</b><br>` : ""}${label}<small>${formatDelta(price)}</small>`;
+  if (isStyleGroup) {
+    button.textContent = label;
+  } else if (group === "border" && label !== "없음") {
+    const exampleImage = label === "크림테두리" ? "./assets/border-cream-example.png" : "";
+    button.innerHTML = `
+      ${icon ? `<b>${icon}</b><br>` : ""}${label}
+      <small>${formatDelta(price)}</small>
+      <span class="chip-example-label">-예시 사진</span>
+      <span class="chip-example-frame">
+        ${exampleImage ? `<img src="${exampleImage}" alt="${label} 예시 사진">` : ""}
+      </span>
+    `;
+  } else {
+    button.innerHTML = `${icon ? `<b>${icon}</b><br>` : ""}${label}<small>${formatDelta(price)}</small>`;
+  }
   button.addEventListener("click", () => selectOption(group, label));
   return button;
 }
@@ -471,6 +484,28 @@ function renderOptions() {
 
   document.getElementById("totalPrice").textContent = formatter.format(totalPrice());
   updateCharacterReferenceControls();
+  syncPlateLetteringField();
+}
+
+function updatePlateLetteringCount() {
+  const count = document.getElementById("plateLetteringCount");
+  const input = document.getElementById("plateLettering");
+  if (count && input) count.textContent = input.value.length;
+}
+
+function syncPlateLetteringField() {
+  const detail = document.querySelector(".plate-lettering-detail");
+  const input = document.getElementById("plateLettering");
+  const enabled = state.plate === "있음";
+  if (detail) detail.hidden = !enabled;
+  if (!enabled && input?.value) {
+    input.value = "";
+  }
+  updatePlateLetteringCount();
+}
+
+function plateLetteringText() {
+  return state.plate === "있음" ? document.getElementById("plateLettering")?.value.trim() || "" : "";
 }
 
 function updateSummary() {
@@ -857,6 +892,7 @@ function buildCustomizePayload() {
     cake_crop_id: selectedRecommendation.cake_crop_id,
     target_tags: buildRecommendTags(),
     lettering_text: document.getElementById("lettering")?.value.trim() || null,
+    plate_lettering_text: plateLetteringText() || null,
     extra_request: document.getElementById("extraCustomizeRequest")?.value.trim() || null,
     character_description: document.getElementById("characterDescription")?.value.trim() || null,
     character_reference_image_url: state.character === "있음" ? characterReferenceImageUrl : null,
@@ -881,7 +917,11 @@ function buildLocalCustomizePreview() {
 
   const extraRequest = document.getElementById("extraCustomizeRequest")?.value.trim();
   const characterDescription = document.getElementById("characterDescription")?.value.trim();
-  const requestNotes = [extraRequest, characterDescription ? `캐릭터 설명: ${characterDescription}` : ""]
+  const requestNotes = [
+    extraRequest,
+    plateLetteringText() ? `판 레터링 문구: ${plateLetteringText()}` : "",
+    characterDescription ? `캐릭터 설명: ${characterDescription}` : "",
+  ]
     .filter(Boolean)
     .join(" / ");
 
@@ -1036,6 +1076,8 @@ function collectSurveyPayload() {
       cream: state.cream,
       character: state.character,
       plate: state.plate,
+      plateLetteringText: plateLetteringText(),
+      plate_lettering_text: plateLetteringText(),
       price: totalPrice(),
       recommendedCakeCropId: selectedRecommendation?.cake_crop_id || "",
       recommendedShopName: selectedRecommendation ? displayShopName(selectedRecommendation) : "",
@@ -1063,6 +1105,7 @@ function collectOrderPayload() {
       cream: state.cream,
       character: state.character,
       plate: state.plate,
+      plateLetteringText: plateLetteringText(),
       price: totalPrice(),
       pickupDate: document.getElementById("pickupDate")?.value || "",
       pickupTime: document.getElementById("pickupTime")?.value || "",
@@ -1086,6 +1129,8 @@ function collectOrderPayload() {
       diffTags: customizePreviewData?.diff_tags || {},
       prompt: customizePreviewData?.prompt || "",
       letteringText: document.getElementById("lettering")?.value.trim() || "",
+      plateLetteringText: plateLetteringText(),
+      plate_lettering_text: plateLetteringText(),
       extraRequest: document.getElementById("extraCustomizeRequest")?.value.trim() || "",
       characterDescription: document.getElementById("characterDescription")?.value.trim() || "",
       characterReferenceImageUrl: characterReferenceImageUrl || "",
@@ -1146,6 +1191,7 @@ function formatOrderOptionList(options = {}) {
     ["크림 데코", options.cream],
     ["캐릭터", options.character],
     ["판 레터링", options.plate],
+    ["판 레터링 문구", options.plate_lettering_text || options.plateLetteringText],
     ["가격", Number.isFinite(price) && price > 0 ? `${price.toLocaleString("ko-KR")}원` : ""],
     ["문구", options.lettering_text],
     ["추가 변경 요청", options.extra_request],
@@ -1321,6 +1367,8 @@ document.getElementById("lettering").addEventListener("input", (event) => {
   document.getElementById("letterCount").textContent = event.target.value.length;
 });
 
+document.getElementById("plateLettering")?.addEventListener("input", updatePlateLetteringCount);
+
 document.getElementById("extraCustomizeRequest")?.addEventListener("input", (event) => {
   document.getElementById("extraRequestCount").textContent = event.target.value.length;
 });
@@ -1404,6 +1452,7 @@ document.getElementById("generateCustomize")?.addEventListener("click", generate
 renderOptions();
 buildSurvey();
 setSavedOrderId(lastOrderId);
+syncPlateLetteringField();
 updateSummary();
 observeReveals();
 setBottomNav("home");
